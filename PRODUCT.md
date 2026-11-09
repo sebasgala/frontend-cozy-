@@ -25,7 +25,7 @@ Reservar con calma, sin abrumar: pocas decisiones por pantalla, precio y condici
 - El frontend es independiente del backend (NestJS, API REST en `http://localhost:3000/api/v1`, Swagger en `/api/docs`).
 - Por ahora todas las pantallas leen datos simulados de un solo archivo de servicios (`src/mocks`) con la misma forma que el contrato OpenAPI del backend. Conectar la API real consistirá en cambiar los servicios, no las pantallas.
 - Se diseña una pantalla por vez, en celular (390 px) y escritorio (1440 px).
-- Las pantallas de referencia de Claude Design están exportadas en `docs/diseno/claude-design/` (solo lectura, no se modifica) y su análisis y plan de portado en `docs/diseno/plan-implementacion.md`. Las decisiones visuales del 2026-10-12 están en `docs/diseno/sistema-visual.md`.
+- Las pantallas de referencia de Claude Design están exportadas en el monolito, en `frontend/docs/diseno/claude-design/` (solo lectura, no se modifica), y su análisis y plan de portado en `frontend/docs/diseno/plan-implementacion.md`. Las decisiones visuales del 2026-10-12 están en `frontend/docs/diseno/sistema-visual.md`. Este repo no incluye esa carpeta `docs/`.
 
 ## Capabilities and Constraints
 
@@ -41,12 +41,12 @@ Reservar con calma, sin abrumar: pocas decisiones por pantalla, precio y condici
 
 - Nombre: **Cozy** (confirmado como definitivo).
 - Concepto: resort moderno y sereno; sereno, elegante, acogedor, minimalista, fotográfico, espacioso, premium discreto. Tono cálido, limpio y confiable.
-- La identidad visual (paleta, tipografía, forma) está fijada por el equipo y vive en `docs/diseno/sistema-visual.md` y `plan-frame.md`.
+- La identidad visual (paleta, tipografía, forma) está fijada por el equipo y vive en `plan-frame.md` y, en el monolito, en `frontend/docs/diseno/sistema-visual.md`.
 - Regla obligatoria: todo texto o ícono sobre fondo oscuro es blanco `#FFFFFF`; nunca crema, Dutch White ni Ecru. El crema solo existe en líneas y separadores.
 - Sin emojis, sin gradientes llamativos, sin sombras fuertes.
 - Estrella del norte elegida por el equipo: **"El Patio Tranquilo"**, un espacio abierto y resguardado con aire, luz tibia y materiales honestos, donde cada pantalla respira y nada grita.
 - Filosofía de componentes elegida por el equipo: **planos, con borde fino**. Tarjetas blancas con borde crema `#E6D5AE` y sin sombra, sobre fondo blanco o gris claro; la profundidad viene del color, no de sombras.
-- Superficies y texto (2026-10-12): fondo y tarjetas blancos, secciones alternas en gris claro `#F4F4F4` y texto en negro neutro `#111111`. El detalle está en `docs/diseno/sistema-visual.md`, y el sistema construido en `DESIGN.md`.
+- Superficies y texto (2026-10-12): fondo y tarjetas blancos, secciones alternas en gris claro `#F4F4F4` y texto en negro neutro `#111111`. El detalle está en `frontend/docs/diseno/sistema-visual.md` (en el monolito), y el sistema construido en `DESIGN.md`.
 
 ## Evidence on Hand
 

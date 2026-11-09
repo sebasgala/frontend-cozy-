@@ -127,7 +127,7 @@ Un espacio abierto y resguardado: aire, luz tibia y materiales honestos, donde c
 
 El movimiento es de una sola voz: entradas con curvas exponenciales suaves (enfoque del hero, caída escalonada de la barra, una línea que se dibuja), un video que avanza con el scroll en lugar de reproducirse solo y apariciones discretas al entrar en pantalla. Con `prefers-reduced-motion` todo queda quieto y visible desde el inicio, con el primer cuadro del video como imagen fija.
 
-Las referencias son las pantallas de Claude Design (`docs/diseno/claude-design/`), traducidas a esta paleta. El diseño original usaba texto crema sobre fondos oscuros, grises fuera de paleta y degradados como marcador de foto; nada de eso forma parte del sistema.
+Las referencias son las pantallas de Claude Design (están en el monolito, en `frontend/docs/diseno/claude-design/`, y este repo no las incluye), traducidas a esta paleta. El diseño original usaba texto crema sobre fondos oscuros, grises fuera de paleta y degradados como marcador de foto; nada de eso forma parte del sistema.
 
 **Key Characteristics:**
 - Superficies blancas y gris claro; el crema solo dibuja líneas.
