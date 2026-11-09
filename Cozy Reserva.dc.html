@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy — Reserva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#fff;color:#1C393F;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C393F;text-decoration:none}
+a:hover{color:#2A525A}
+input,button,select{font:inherit}
+input::placeholder{color:#8A9A9D}
+@keyframes rv-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rv-fade{from{opacity:0}to{opacity:1}}
+@keyframes rv-pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+@keyframes rv-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<div style="font-family:Inter,system-ui,sans-serif;background:#fff;color:#1C393F;min-height:100vh;display:flex;flex-direction:column;overflow-x:clip">
+
+<nav aria-label="Principal" style="background:#fff;border-bottom:1px solid #EAEAEA">
+  <div style="max-width:1280px;margin:0 auto;height:64px;padding:0 clamp(20px,5vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="Cozy Landing.dc.html" aria-label="Cozy, ir al inicio" style="display:flex;align-items:center;height:64px;margin:0 -10px"><img src="assets/cozy-logo-cream.png" alt="Cozy" style="height:64px;width:auto;display:block;filter:brightness(0) saturate(100%) invert(21%) sepia(14%) saturate(900%) hue-rotate(143deg) brightness(92%)"></a>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="font-size:13px;font-weight:700;color:#4B6166">ES</span>
+      <a href="Cozy Mi cuenta.dc.html#ingresar" style="background:#1C393F;color:#fff;font-weight:500;font-size:14px;padding:10px 18px;border-radius:12px" style-hover="background:#2A525A;color:#fff">Ingresar</a>
+    </div>
+  </div>
+</nav>
+
+<main style="flex:1;width:100%;max-width:1180px;margin:0 auto;padding:24px clamp(20px,5vw,56px) 64px;display:flex;flex-direction:column;gap:24px">
+
+  <sc-if value="{{ verPasos }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{ verVolver }}" hint-placeholder-val="{{ true }}"><a href="{{ volverHref }}" onClick="{{ volverClick }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;min-height:44px;font-size:14px;font-weight:500" style-focus="outline:2px solid #1C393F;outline-offset:3px;border-radius:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>{{ volverTxt }}</a></sc-if>
+    <ol aria-label="Pasos de la reserva" style="list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:10px">
+      <sc-for list="{{ pasos }}" as="p" hint-placeholder-count="3">
+        <li aria-current="{{ p.cur }}" style="display:flex;align-items:center;gap:10px;flex:{{ p.flex }};min-width:0">
+          <span style="width:30px;height:30px;border-radius:50%;background:{{ p.bg }};color:{{ p.fg }};border:1px solid {{ p.bd }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">
+            <sc-if value="{{ p.done }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if>
+            <sc-if value="{{ p.num }}" hint-placeholder-val="{{ true }}"><span>{{ p.n }}</span></sc-if>
+          </span>
+          <sc-if value="{{ p.showLabel }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;font-weight:{{ p.w }};color:{{ p.lc }};white-space:nowrap">{{ p.label }}</span></sc-if>
+          <sc-if value="{{ p.line }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="flex:1;height:1px;background:{{ p.lineBg }};min-width:12px"></span></sc-if>
+        </li>
+      </sc-for>
+    </ol>
+    <sc-if value="{{ verTimer }}" hint-placeholder-val="{{ true }}">
+      <div role="timer" aria-live="off" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#F7E5C1;border-radius:12px;padding:12px 16px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2M9 2h6"></path></svg>
+        <span style="flex:1;min-width:200px;font-size:15px;font-weight:500">Tu precio y disponibilidad se reservan por 15 minutos</span>
+        <span aria-label="{{ timerAria }}" style="font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;letter-spacing:.02em">{{ timerTxt }}</span>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ verForm }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:{{ gridCols }};gap:32px;align-items:start">
+
+    <aside aria-label="Resumen de tu estadía" style="order:{{ asideOrder }};position:{{ asidePos }};top:24px;border:1px solid #EAEAEA;border-radius:20px;background:#fff;overflow:hidden">
+      <sc-if value="{{ movil }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ toggleSum }}" aria-expanded="{{ sumAria }}" style="width:100%;min-height:56px;padding:0 16px;border:0;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;color:#1C393F;text-align:left" style-focus="outline:2px solid #1C393F;outline-offset:-2px"><span style="display:flex;flex-direction:column"><span style="font-weight:600;font-size:15px">Resumen de tu estadía</span><span style="font-size:13px;color:#4B6166">{{ resumenCorto }}</span></span><span style="display:flex;align-items:center;gap:8px;font-weight:700">{{ totalTxt }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ sumRot }};transition:transform 200ms"><path d="M6 9l6 6 6-6"></path></svg></span></button></sc-if>
+      <sc-if value="{{ sumVisible }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;animation:rv-fade 200ms ease both">
+        <div style="padding:12px 12px 0"><div role="img" aria-label="{{ fotoAlt }}" style="aspect-ratio:16/10;border-radius:16px;background:{{ fotoBg }};display:flex;align-items:flex-end;padding:16px"><sc-if value="{{ sinFoto }}" hint-placeholder-val="{{ true }}"><span style="color:#F7E5C1;font-weight:600;font-size:20px;letter-spacing:-.01em">Hotel Mansión Alcázar</span></sc-if></div></div>
+        <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px"><h2 style="margin:0;font-weight:600;font-size:20px;letter-spacing:-.02em">Hotel Mansión Alcázar</h2><span style="font-size:14px;color:#4B6166">Centro histórico, Cartagena · Colombia</span></div>
+          <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:14px;padding-top:14px;border-top:1px solid #EAEAEA">
+            <dt style="color:#4B6166">Habitación</dt><dd style="margin:0;text-align:right;font-weight:500">{{ habitacion }}</dd>
+            <dt style="color:#4B6166">Entrada</dt><dd style="margin:0;text-align:right;font-weight:500">{{ entradaTxt }}</dd>
+            <dt style="color:#4B6166">Salida</dt><dd style="margin:0;text-align:right;font-weight:500">{{ salidaTxt }}</dd>
+            <dt style="color:#4B6166">Noches</dt><dd style="margin:0;text-align:right;font-weight:500">{{ nochesTxt }}</dd>
+            <dt style="color:#4B6166">Huéspedes</dt><dd style="margin:0;text-align:right;font-weight:500">{{ huespedesTxt }}</dd>
+            <dt style="color:#4B6166">Precio por noche</dt><dd style="margin:0;text-align:right;font-weight:500">{{ precioNocheTxt }}</dd>
+          </dl>
+          <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px;padding-top:14px;border-top:1px solid #EAEAEA">
+            <dt style="color:#4B6166">{{ subLabel }}</dt><dd style="margin:0;text-align:right">{{ subTxt }}</dd>
+            <dt style="color:#4B6166">Impuestos y cargos (12 %)</dt><dd style="margin:0;text-align:right">{{ impTxt }}</dd>
+          </dl>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid #EAEAEA"><span style="font-weight:600;font-size:16px">Total</span><span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-weight:700;font-size:26px;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ totalTxt }}</span><span style="font-size:12px;color:#4B6166">Moneda: USD (dólares estadounidenses)</span></span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#4B6166;line-height:1.5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B6166" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"></path></svg><span>{{ politicaCorta }}</span></div>
+        </div>
+      </div>
+      </sc-if>
+    </aside>
+
+    <section ref="{{ formRef }}" aria-labelledby="form-titulo" style="order:{{ formOrder }};display:flex;flex-direction:column;gap:20px;min-width:0;animation:rv-rise 300ms cubic-bezier(.16,1,.3,1) both">
+      <div style="display:flex;flex-direction:column;gap:6px"><h1 id="form-titulo" style="margin:0;font-weight:600;font-size:clamp(26px,3vw,34px);letter-spacing:-.03em;line-height:1.1">{{ formTitulo }}</h1><p style="margin:0;font-size:15px;color:#4B6166">{{ formSub }}</p></div>
+
+      <sc-if value="{{ esPago }}" hint-placeholder-val="{{ false }}">
+        <div role="note" style="display:flex;gap:12px;align-items:flex-start;border:2px solid #1C393F;border-radius:12px;padding:14px 16px;background:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5h.01"></path></svg><span style="display:flex;flex-direction:column;gap:2px"><strong style="font-size:16px">Pago simulado: no se realiza ningún cobro</strong><span style="font-size:14px;color:#4B6166">Usa cualquier número de 16 dígitos. Estos datos no se envían a ningún banco.</span></span></div>
+      </sc-if>
+
+      <sc-if value="{{ resumenErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;align-items:center;gap:10px;border:1px solid #1C393F;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg>{{ resumenErr }}</div></sc-if>
+
+      <form noValidate="{{ true }}" onSubmit="{{ onSubmit }}" style="display:flex;flex-direction:column;gap:20px">
+        <fieldset disabled="{{ procesando }}" style="border:0;margin:0;padding:0;display:grid;grid-template-columns:{{ fieldCols }};gap:18px 16px;min-width:0">
+          <legend style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{{ formTitulo }}</legend>
+          <sc-for list="{{ campos }}" as="f" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:6px;grid-column:{{ f.span }};min-width:0">
+              <label for="{{ f.id }}" style="font-size:14px;font-weight:500">{{ f.label }}<sc-if value="{{ f.req }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true"> *</span></sc-if><sc-if value="{{ f.opt }}" hint-placeholder-val="{{ false }}"><span style="color:#4B6166;font-weight:400"> (opcional)</span></sc-if></label>
+              <input id="{{ f.id }}" data-fld="{{ f.k }}" type="{{ f.type }}" inputMode="{{ f.mode }}" autoComplete="{{ f.ac }}" placeholder="{{ f.ph }}" maxLength="{{ f.max }}" value="{{ f.value }}" onChange="{{ f.onChange }}" onBlur="{{ f.onBlur }}" aria-invalid="{{ f.inv }}" aria-required="{{ f.ariaReq }}" aria-describedby="{{ f.desc }}" style="width:100%;min-height:48px;padding:0 14px;border:{{ f.border }};border-radius:12px;background:#fff;color:#1C393F;font-size:16px;outline:none;font-variant-numeric:tabular-nums;opacity:{{ f.op }}" style-focus="box-shadow:0 0 0 2px #1C393F;border-color:#1C393F">
+              <sc-if value="{{ f.err }}" hint-placeholder-val="{{ false }}"><span id="{{ f.errId }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg>{{ f.err }}</span></sc-if>
+              <sc-if value="{{ f.help }}" hint-placeholder-val="{{ false }}"><span id="{{ f.helpId }}" style="font-size:13px;color:#4B6166">{{ f.help }}</span></sc-if>
+            </div>
+          </sc-for>
+        </fieldset>
+
+        <sc-if value="{{ esPago }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;background:#F4F4F4;border-radius:12px;padding:14px 16px"><span style="font-size:15px">Total a pagar</span><span style="font-weight:700;font-size:22px;font-variant-numeric:tabular-nums">{{ totalTxt }}</span></div></sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button type="submit" disabled="{{ procesando }}" aria-busy="{{ procesandoAria }}" style="min-height:52px;width:100%;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:600;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;opacity:{{ btnOp }}" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px">
+            <sc-if value="{{ procesando }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="animation:rv-spin 800ms linear infinite"><path d="M12 3a9 9 0 1 1-9 9"></path></svg></sc-if>
+            <span>{{ btnTxt }}</span>
+          </button>
+          <span aria-live="polite" style="font-size:13px;color:#4B6166;text-align:center">{{ btnNota }}</span>
+        </div>
+      </form>
+    </section>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ esConf }}" hint-placeholder-val="{{ false }}">
+  <section aria-labelledby="conf-t" style="max-width:720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px;animation:rv-rise 300ms cubic-bezier(.16,1,.3,1) both">
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:12px">
+      <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#1C393F;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+      <h1 id="conf-t" tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;line-height:1.1;outline:none">¡Tu reserva está confirmada!</h1>
+      <p style="margin:0;font-size:16px;color:#4B6166;line-height:1.5">{{ confSub }}</p>
+    </div>
+    <div style="background:#F7E5C1;border-radius:20px;padding:20px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Localizador</span><span style="font-weight:700;font-size:clamp(32px,6vw,44px);letter-spacing:.14em;font-variant-numeric:tabular-nums">{{ loc }}</span></div>
+      <button type="button" onClick="{{ copiar }}" style="min-height:48px;padding:0 18px;border:1px solid #1C393F;border-radius:12px;background:#fff;color:#1C393F;font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:8px" style-hover="background:#fff" style-focus="outline:2px solid #1C393F;outline-offset:3px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h9"></path></svg><span aria-live="polite">{{ copiarTxt }}</span></button>
+    </div>
+    <div style="border:1px solid #EAEAEA;border-radius:20px;padding:20px 24px;display:grid;grid-template-columns:{{ confCols }};gap:16px 32px;font-size:15px">
+      <sc-for list="{{ confDatos }}" as="d" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#4B6166">{{ d.l }}</span><span style="font-weight:500">{{ d.v }}</span></div></sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-weight:600;font-size:20px;letter-spacing:-.02em">Qué pasa ahora</h2>
+      <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ pasosAhora }}" as="a" hint-placeholder-count="3"><li style="display:flex;gap:14px;align-items:flex-start"><span aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:1px solid #1C393F;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">{{ a.n }}</span><span style="display:flex;flex-direction:column;gap:2px;font-size:15px;line-height:1.5"><strong style="font-weight:600">{{ a.t }}</strong><span style="color:#4B6166">{{ a.d }}</span></span></li></sc-for>
+      </ol>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <a href="Cozy Mi cuenta.dc.html#mis-reservas" style="flex:1 1 220px;min-height:52px;border-radius:12px;background:#1C393F;color:#fff;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center" style-hover="background:#2A525A;color:#fff" style-focus="outline:2px solid #1C393F;outline-offset:3px">Ver mis reservas</a>
+      <a href="Cozy Landing.dc.html" style="flex:1 1 220px;min-height:52px;border-radius:12px;border:1px solid #1C393F;color:#1C393F;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Volver al inicio</a>
+    </div>
+    <button type="button" onClick="{{ abrirCancelar }}" style="align-self:flex-start;min-height:44px;padding:0;border:0;background:transparent;color:#1C393F;font-weight:500;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:3px;border-radius:6px">Cancelar esta reserva</button>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ esCancelada }}" hint-placeholder-val="{{ false }}">
+  <section aria-labelledby="canc-t" style="max-width:640px;width:100%;margin:24px auto 0;display:flex;flex-direction:column;gap:20px;animation:rv-rise 300ms cubic-bezier(.16,1,.3,1) both">
+    <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#F7E5C1;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+    <h1 id="canc-t" tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;line-height:1.1;outline:none">Cancelamos tu reserva</h1>
+    <div style="border:1px solid #EAEAEA;border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.5">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><span style="color:#4B6166">Localizador</span><span style="font-weight:700;letter-spacing:.12em;text-decoration:line-through">{{ loc }}</span></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><span style="color:#4B6166">Alojamiento</span><span style="font-weight:500">Hotel Mansión Alcázar · {{ fechasCortas }}</span></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #EAEAEA"><span style="color:#4B6166">Devolución</span><span style="font-weight:700">{{ reembolsoTxt }}</span></div>
+      <p style="margin:0;font-size:14px;color:#4B6166">{{ reembolsoNota }}</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <a href="Cozy Resultados.dc.html" style="flex:1 1 220px;min-height:52px;border-radius:12px;background:#1C393F;color:#fff;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center" style-hover="background:#2A525A;color:#fff" style-focus="outline:2px solid #1C393F;outline-offset:3px">Buscar otro alojamiento</a>
+      <a href="Cozy Landing.dc.html" style="flex:1 1 220px;min-height:52px;border-radius:12px;border:1px solid #1C393F;color:#1C393F;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Volver al inicio</a>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ esError }}" hint-placeholder-val="{{ false }}">
+  <section role="alert" aria-labelledby="err-t" style="max-width:600px;width:100%;margin:8px auto 0;border:1px solid #EAEAEA;border-radius:20px;padding:clamp(24px,4vw,40px);display:flex;flex-direction:column;gap:16px;animation:rv-pop 250ms cubic-bezier(.16,1,.3,1) both">
+    <span aria-hidden="true" style="width:52px;height:52px;border-radius:50%;background:#F7E5C1;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ eIcon }}"></path></svg></span>
+    <h1 id="err-t" tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(24px,3vw,30px);letter-spacing:-.03em;line-height:1.15;outline:none">{{ eTitulo }}</h1>
+    <p style="margin:0;font-size:16px;line-height:1.55;color:#4B6166">{{ eTexto }}</p>
+    <sc-if value="{{ ePrecio }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+        <div style="border:1px solid #EAEAEA;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#4B6166">Precio anterior</span><span style="font-weight:600;font-size:20px;color:#4B6166;text-decoration:line-through;font-variant-numeric:tabular-nums">{{ precioAntes }}</span><span style="font-size:13px;color:#4B6166">{{ totalAntes }}</span></div>
+        <div style="border:2px solid #1C393F;border-radius:12px;padding:13px 15px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#4B6166">Precio nuevo</span><span style="font-weight:700;font-size:20px;font-variant-numeric:tabular-nums">{{ precioNuevo }}</span><span style="font-size:13px;font-weight:500">{{ totalNuevo }}</span></div>
+      </div>
+    </sc-if>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
+      <sc-for list="{{ eAcciones }}" as="a" hint-placeholder-count="2"><button type="button" onClick="{{ a.click }}" style="flex:1 1 200px;min-height:52px;padding:0 18px;border-radius:12px;border:1px solid #1C393F;background:{{ a.bg }};color:{{ a.fg }};font-weight:600;font-size:16px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:3px">{{ a.t }}</button></sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+</main>
+
+<footer style="border-top:1px solid #EAEAEA">
+  <div style="max-width:1280px;margin:0 auto;padding:28px clamp(20px,5vw,56px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;font-size:14px">
+    <div style="display:flex;flex-wrap:wrap;gap:24px"><a href="Cozy Landing.dc.html">Explorar</a><a href="#">Ayuda</a><a href="#">Términos</a><a href="#">Privacidad</a></div>
+    <span style="color:#4B6166">© 2026 Cozy</span>
+  </div>
+</footer>
+
+<sc-if value="{{ dlgOpen }}" hint-placeholder-val="{{ false }}">
+<div style="display:contents">
+  <div aria-hidden="true" onClick="{{ cerrarCancelar }}" style="position:fixed;inset:0;z-index:90;background:rgba(28,57,63,.4);animation:rv-fade 200ms ease both"></div>
+  <div style="position:fixed;inset:0;z-index:91;display:flex;align-items:{{ dlgAlign }};justify-content:center;padding:{{ dlgPad }};pointer-events:none">
+    <div ref="{{ dlgRef }}" role="alertdialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d" onKeyDown="{{ dlgKey }}" style="pointer-events:auto;width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:{{ dlgRadius }};padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 24px 64px rgba(28,57,63,.28);animation:rv-pop 200ms cubic-bezier(.16,1,.3,1) both">
+      <h2 id="dlg-t" style="margin:0;font-weight:600;font-size:22px;letter-spacing:-.02em">¿Cancelar tu reserva?</h2>
+      <div id="dlg-d" style="display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.55">
+        <div style="background:#F4F4F4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;font-size:14px"><span style="font-weight:600">Hotel Mansión Alcázar · {{ habitacion }}</span><span style="color:#4B6166">{{ fechasCortas }} · Localizador {{ loc }}</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-weight:600">Condiciones de esta habitación</span><sc-for list="{{ condiciones }}" as="c" hint-placeholder-count="2"><span style="display:flex;gap:10px;align-items:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:4px"><path d="M5 12l5 5 9-10"></path></svg><span>{{ c.t }}</span></span></sc-for></div>
+        <div style="border:1px solid #1C393F;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#4B6166">Si cancelas ahora</span><span style="font-weight:700;font-size:18px">{{ reembolsoTxt }}</span><span style="font-size:13px;color:#4B6166">{{ reembolsoNota }}</span></div>
+        <span style="font-size:14px;color:#4B6166">Esta acción no se puede deshacer.</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:12px">
+        <button type="button" onClick="{{ cerrarCancelar }}" style="min-height:48px;padding:0 18px;border:0;border-radius:12px;background:transparent;color:#1C393F;font-weight:500;font-size:15px;cursor:pointer" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">No, mantener reserva</button>
+        <button type="button" onClick="{{ confirmarCancelar }}" style="min-height:48px;padding:0 20px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:600;font-size:15px;cursor:pointer" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px">Sí, cancelar reserva</button>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;vista&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;flujo&quot;,&quot;pago&quot;,&quot;confirmacion&quot;,&quot;dialogo&quot;,&quot;cancelada&quot;,&quot;no-disponible&quot;,&quot;precio&quot;,&quot;vencida&quot;,&quot;error&quot;],&quot;default&quot;:&quot;flujo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Revisión&quot;},&quot;fallaAlPagar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ninguna&quot;,&quot;no-disponible&quot;,&quot;precio&quot;,&quot;error&quot;],&quot;default&quot;:&quot;ninguna&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Revisión&quot;}}">
+class Component extends DCLogic {
+  static MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  static DIA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  static ICON = {
+    noDisp: 'M3 10h18M7 3v4M17 3v4M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM9.5 13.5l5 5M14.5 13.5l-5 5',
+    precio: 'M20 12l-8 8-9-9V3h8l9 9zM7.5 7.5h.01',
+    vencida: 'M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2.5 2M9 2h6',
+    error: 'M12 3l9 16H3l9-16zM12 10v4M12 17h.01'
+  };
+  pad(n) { return String(n).padStart(2, '0'); }
+  ymd(d) { return d.getFullYear() + '-' + this.pad(d.getMonth() + 1) + '-' + this.pad(d.getDate()); }
+  parse(s) { const p = String(s || '').split('-').map(Number); return p.length === 3 && p[0] ? new Date(p[0], p[1] - 1, p[2]) : null; }
+  fecha(d) { return Component.DIA[d.getDay()] + ' ' + d.getDate() + ' ' + Component.MES[d.getMonth()] + ' ' + d.getFullYear(); }
+  usd(n) { return '$' + Number(n).toLocaleString('en-US') + ' USD'; }
+
+  initial() {
+    const hs = location.hash || '', q = new URLSearchParams(hs.indexOf('?') > -1 ? hs.slice(hs.indexOf('?') + 1) : '');
+    const t = new Date(); t.setHours(0, 0, 0, 0);
+    let e = this.parse(q.get('entrada')), s = this.parse(q.get('salida'));
+    if (!e || e < t) { e = new Date(t); e.setDate(e.getDate() + 14); }
+    if (!s || s <= e) { s = new Date(e); s.setDate(s.getDate() + 3); }
+    const h = Math.max(1, Math.min(8, Number(q.get('huespedes')) || 2));
+    return { entrada: e, salida: s, huespedes: h };
+  }
+  state = {
+    paso: 'datos', w: typeof window !== 'undefined' ? window.innerWidth : 1280, sumOpen: false,
+    F: { nombre: '', apellido: '', correo: '', telefono: '' }, P: { num: '', titular: '', venc: '', cvc: '' },
+    touched: {}, sub: false, msg: '', deadline: Date.now() + 15 * 60000, now: Date.now(),
+    procesando: false, err: null, loc: '', copiado: false, dlg: false, precioNoche: 258, ...this.initial()
+  };
+  formRef = React.createRef(); dlgRef = React.createRef();
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this.onResize);
+    this.tick = setInterval(() => {
+      const st = this.state; if (st.paso !== 'datos' && st.paso !== 'pago') return;
+      const now = Date.now(); if (now >= st.deadline && !st.procesando) { this.fail('vencida'); return; }
+      this.setState({ now });
+    }, 1000);
+    this.onKey = (e) => { if (e.key === 'Escape' && this.state.dlg) this.cerrarDlg(); };
+    window.addEventListener('keydown', this.onKey);
+    this.applyVista(this.props.vista);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); window.removeEventListener('keydown', this.onKey); clearInterval(this.tick); clearTimeout(this.payT); clearTimeout(this.cpT); }
+  componentDidUpdate(prev) { if (prev.vista !== this.props.vista) this.applyVista(this.props.vista); }
+
+  applyVista(v) {
+    const demoF = { nombre: 'María José', apellido: 'Andrade', correo: 'mariajose.andrade@correo.com', telefono: '+593 99 123 4567' };
+    const base = { procesando: false, dlg: false, sub: false, msg: '', touched: {}, deadline: Date.now() + 15 * 60000, now: Date.now() };
+    if (!v || v === 'flujo') return;
+    if (v === 'pago') this.setState({ ...base, paso: 'pago', err: null, F: demoF });
+    else if (v === 'confirmacion') this.setState({ ...base, paso: 'confirmada', err: null, F: demoF, loc: this.state.loc || this.genLoc() });
+    else if (v === 'dialogo') this.setState({ ...base, paso: 'confirmada', err: null, F: demoF, loc: this.state.loc || this.genLoc() }, () => this.abrirDlg());
+    else if (v === 'cancelada') this.setState({ ...base, paso: 'cancelada', err: null, F: demoF, loc: this.state.loc || this.genLoc() });
+    else this.setState({ ...base, paso: 'pago', F: demoF, err: v });
+  }
+  genLoc() { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 8; i++) s += A[Math.floor(Math.random() * A.length)]; return s; }
+  top() { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) {} }
+  focusSel(sel) { setTimeout(() => { const el = document.querySelector(sel); if (el) el.focus(); }, 60); }
+  fail(kind) { clearTimeout(this.payT); this.setState({ err: kind, procesando: false }); this.top(); this.focusSel('#err-t'); }
+
+  errsDatos(F) {
+    const e = {};
+    if (!F.nombre.trim()) e.nombre = 'Escribe tu nombre';
+    if (!F.apellido.trim()) e.apellido = 'Escribe tu apellido';
+    if (!F.correo.trim()) e.correo = 'Escribe tu correo';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(F.correo.trim())) e.correo = 'Revisa el correo: debe verse como nombre@correo.com';
+    if (F.telefono.trim() && F.telefono.replace(/\D/g, '').length < 7) e.telefono = 'Revisa el teléfono: faltan dígitos';
+    return e;
+  }
+  errsPago(P) {
+    const e = {}, d = P.num.replace(/\D/g, '');
+    if (!d) e.num = 'Escribe el número de la tarjeta'; else if (d.length !== 16) e.num = 'El número debe tener 16 dígitos';
+    if (!P.titular.trim()) e.titular = 'Escribe el nombre como aparece en la tarjeta';
+    const m = P.venc.match(/^(\d{2})\/(\d{2})$/);
+    if (!P.venc) e.venc = 'Escribe la fecha de vencimiento';
+    else if (!m || +m[1] < 1 || +m[1] > 12) e.venc = 'Usa el formato MM/AA';
+    else { const now = new Date(), y = 2000 + +m[2]; if (y < now.getFullYear() || (y === now.getFullYear() && +m[1] < now.getMonth() + 1)) e.venc = 'La tarjeta está vencida'; }
+    if (!P.cvc) e.cvc = 'Escribe el código de seguridad'; else if (!/^\d{3,4}$/.test(P.cvc)) e.cvc = 'El código tiene 3 o 4 dígitos';
+    return e;
+  }
+  fmt(k, v) {
+    if (k === 'num') return v.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
+    if (k === 'venc') { const d = v.replace(/\D/g, '').slice(0, 4); return d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; }
+    if (k === 'cvc') return v.replace(/\D/g, '').slice(0, 4);
+    return v;
+  }
+  submit(e) {
+    if (e) e.preventDefault();
+    const st = this.state, pago = st.paso === 'pago', errs = pago ? this.errsPago(st.P) : this.errsDatos(st.F), keys = Object.keys(errs);
+    if (keys.length) { this.setState({ sub: true, msg: 'Revisa ' + keys.length + (keys.length === 1 ? ' campo' : ' campos') }, () => { const el = this.formRef.current && this.formRef.current.querySelector('[data-fld="' + keys[0] + '"]'); if (el) el.focus(); }); return; }
+    if (!pago) { this.setState({ paso: 'pago', sub: false, msg: '', touched: {} }); this.top(); this.focusSel('#form-titulo'); return; }
+    this.setState({ procesando: true, msg: '' });
+    this.payT = setTimeout(() => {
+      const f = this.props.fallaAlPagar;
+      if (f && f !== 'ninguna' && !this.fallado) { this.fallado = true; this.fail(f); return; }
+      this.setState({ procesando: false, paso: 'confirmada', loc: this.genLoc(), err: null }); this.top(); this.focusSel('#conf-t');
+    }, 1800);
+  }
+  abrirDlg() { this.opener = document.activeElement; this.setState({ dlg: true }, () => setTimeout(() => { const b = this.dlgRef.current && this.dlgRef.current.querySelector('button'); if (b) b.focus(); }, 60)); }
+  cerrarDlg() { this.setState({ dlg: false }); const o = this.opener; if (o && o.focus) setTimeout(() => o.focus(), 0); }
+  trap(e) {
+    if (e.key !== 'Tab') return; const r = this.dlgRef.current; if (!r) return;
+    const f = r.querySelectorAll('button,[href],input,select,textarea'); if (!f.length) return;
+    const a = f[0], b = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); b.focus(); } else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
+  }
+
+  renderVals() {
+    const s = this.state, movil = s.w < 900, chico = s.w < 560, M = Component;
+    const noches = Math.round((s.salida - s.entrada) / 864e5), sub = s.precioNoche * noches, imp = Math.round(sub * 0.12), total = sub + imp;
+    const limite = new Date(s.entrada); limite.setHours(15, 0, 0, 0); limite.setTime(limite.getTime() - 48 * 36e5);
+    const gratis = Date.now() < limite.getTime();
+    const limiteTxt = M.DIA[limite.getDay()] + ' ' + limite.getDate() + ' ' + M.MES[limite.getMonth()] + ' a las 15:00';
+    const paso = s.err ? 'pago' : s.paso, idx = { datos: 0, pago: 1, confirmada: 2, cancelada: 2 }[paso];
+    const LBL = ['Tus datos', 'Pago', 'Confirmación'];
+    const pasos = LBL.map((label, i) => {
+      const done = i < idx || (i === 2 && paso === 'confirmada'), cur = i === idx;
+      return { label, n: String(i + 1), done, num: !done, cur: cur ? 'step' : 'false', flex: i < 2 ? '1' : 'none', showLabel: !chico || cur, w: cur ? 600 : 400, lc: i <= idx ? '#1C393F' : '#4B6166',
+        bg: done ? '#1C393F' : cur ? '#F7E5C1' : '#fff', fg: '#1C393F', bd: done || cur ? '#1C393F' : '#EAEAEA', line: i < 2, lineBg: i < idx ? '#1C393F' : '#EAEAEA' };
+    });
+    const left = Math.max(0, s.deadline - s.now), mm = Math.floor(left / 60000), ss = Math.floor((left % 60000) / 1000);
+
+    const mkField = (k, label, o, src, errs, setter) => {
+      const show = (s.touched[k] || s.sub) && errs[k];
+      return { k, id: 'f-' + k, label, req: !o.opt, opt: !!o.opt, ariaReq: o.opt ? 'false' : 'true', type: o.type || 'text', mode: o.mode || 'text', ac: o.ac || 'off', ph: o.ph || '', max: o.max || 120, value: src[k],
+        span: o.full || movil ? '1 / -1' : 'auto', err: show ? errs[k] : '', errId: 'e-' + k, help: show ? '' : (o.help || ''), helpId: 'h-' + k, desc: show ? 'e-' + k : (o.help ? 'h-' + k : undefined),
+        inv: show ? 'true' : 'false', border: show ? '1px solid #1C393F' : '1px solid #EAEAEA', op: s.procesando ? 0.6 : 1,
+        onChange: (e) => { const v = this.fmt(k, e.target.value); this.setState((x) => ({ [setter]: { ...x[setter], [k]: v }, msg: '' })); },
+        onBlur: () => this.setState((x) => ({ touched: { ...x.touched, [k]: true } })) };
+    };
+    let campos;
+    if (paso === 'pago') { const e = this.errsPago(s.P); campos = [mkField('num', 'Número de tarjeta', { full: 1, mode: 'numeric', ac: 'cc-number', ph: '4242 4242 4242 4242', max: 19 }, s.P, e, 'P'), mkField('titular', 'Nombre en la tarjeta', { full: 1, ac: 'cc-name', ph: 'Como aparece en la tarjeta' }, s.P, e, 'P'), mkField('venc', 'Vencimiento', { mode: 'numeric', ac: 'cc-exp', ph: 'MM/AA', max: 5 }, s.P, e, 'P'), mkField('cvc', 'Código de seguridad', { mode: 'numeric', ac: 'cc-csc', ph: '123', max: 4, help: '3 o 4 dígitos al reverso' }, s.P, e, 'P')]; }
+    else { const e = this.errsDatos(s.F); campos = [mkField('nombre', 'Nombre', { ac: 'given-name' }, s.F, e, 'F'), mkField('apellido', 'Apellido', { ac: 'family-name' }, s.F, e, 'F'), mkField('correo', 'Correo', { full: 1, type: 'email', mode: 'email', ac: 'email', ph: 'nombre@correo.com', help: 'Aquí verás el resumen de tu reserva.' }, s.F, e, 'F'), mkField('telefono', 'Teléfono', { full: 1, opt: 1, type: 'tel', mode: 'tel', ac: 'tel', ph: '+593 99 123 4567', help: 'Solo para avisos sobre tu llegada.' }, s.F, e, 'F')]; }
+
+    const refund = gratis ? total : 0;
+    const reembolsoTxt = gratis ? 'Te devolvemos ' + this.usd(refund) : 'No hay devolución';
+    const reembolsoNota = gratis ? 'Como el pago es simulado, no se mueve dinero real. En un pago real volvería a la misma tarjeta.' : 'Ya pasó el plazo de cancelación sin costo (' + limiteTxt + ').';
+    const fechasCortas = this.fecha(s.entrada).slice(0, -5) + ' → ' + this.fecha(s.salida).slice(0, -5);
+
+    const E = {
+      'no-disponible': { t: 'Esta habitación ya no está disponible', x: 'Alguien reservó la última unidad para esas fechas mientras completabas tus datos. No se hizo ningún cobro.', i: M.ICON.noDisp, a: [{ t: 'Ver otras opciones', p: 1, go: () => { location.href = 'Cozy Resultados.dc.html'; } }, { t: 'Cambiar fechas', go: () => { location.href = 'Cozy Detalle.dc.html'; } }] },
+      precio: { t: 'El precio cambió', x: 'El alojamiento actualizó su tarifa para esas fechas. Revisa el nuevo precio antes de continuar.', i: M.ICON.precio, a: [{ t: 'Aceptar nuevo precio', p: 1, go: () => { this.setState({ precioNoche: 279, err: null, paso: 'pago', deadline: Date.now() + 15 * 60000, now: Date.now() }); this.top(); } }, { t: 'Volver al alojamiento', go: () => { location.href = 'Cozy Detalle.dc.html'; } }] },
+      vencida: { t: 'Se acabó el tiempo de reserva', x: 'Pasaron los 15 minutos en que guardamos tu precio y disponibilidad. Tus datos siguen aquí; solo hay que comprobar otra vez el precio.', i: M.ICON.vencida, a: [{ t: 'Volver a empezar', p: 1, go: () => { this.setState({ err: null, paso: 'datos', deadline: Date.now() + 15 * 60000, now: Date.now(), sub: false, touched: {} }); this.top(); } }] },
+      error: { t: 'Algo salió mal', x: 'No pudimos completar la reserva por un problema de conexión. No se hizo ningún cobro. Inténtalo de nuevo en unos segundos.', i: M.ICON.error, a: [{ t: 'Reintentar', p: 1, go: () => { this.setState({ err: null, paso: 'pago' }, () => this.submit()); } }, { t: 'Volver al alojamiento', go: () => { location.href = 'Cozy Detalle.dc.html'; } }] }
+    }[s.err] || null;
+    const nuevoTotal = Math.round(279 * noches * 1.12);
+
+    return {
+      verPasos: !s.err || true, verVolver: (paso === 'datos' || paso === 'pago') && !s.err,
+      volverTxt: paso === 'pago' ? 'Volver a tus datos' : 'Volver al alojamiento', volverHref: paso === 'pago' ? '#' : 'Cozy Detalle.dc.html',
+      volverClick: (e) => { if (paso === 'pago') { e.preventDefault(); this.setState({ paso: 'datos', sub: false, msg: '' }); this.top(); } },
+      pasos, verTimer: (paso === 'datos' || paso === 'pago') && !s.err, timerTxt: this.pad(mm) + ':' + this.pad(ss), timerAria: 'Quedan ' + mm + ' minutos y ' + ss + ' segundos',
+      verForm: (paso === 'datos' || paso === 'pago') && !s.err, esPago: paso === 'pago',
+      gridCols: movil ? 'minmax(0,1fr)' : 'minmax(0,1fr) 400px', asideOrder: movil ? 0 : 2, formOrder: 1, asidePos: movil ? 'static' : 'sticky',
+      movil, sumVisible: !movil || s.sumOpen, sumAria: s.sumOpen ? 'true' : 'false', sumRot: s.sumOpen ? 'rotate(180deg)' : 'none', toggleSum: () => this.setState((x) => ({ sumOpen: !x.sumOpen })),
+      resumenCorto: noches + (noches === 1 ? ' noche' : ' noches') + ' · ' + s.huespedes + (s.huespedes === 1 ? ' huésped' : ' huéspedes'),
+      fotoAlt: 'Foto de Hotel Mansión Alcázar', fotoBg: 'linear-gradient(135deg,#1C393F,#B7A85C)', sinFoto: true,
+      habitacion: 'Doble superior', entradaTxt: this.fecha(s.entrada) + ', desde 15:00', salidaTxt: this.fecha(s.salida) + ', hasta 12:00',
+      nochesTxt: String(noches), huespedesTxt: s.huespedes + (s.huespedes === 1 ? ' adulto' : ' adultos'), precioNocheTxt: this.usd(s.precioNoche),
+      subLabel: this.usd(s.precioNoche).replace(' USD', '') + ' × ' + noches + (noches === 1 ? ' noche' : ' noches'), subTxt: this.usd(sub), impTxt: this.usd(imp), totalTxt: this.usd(total),
+      politicaCorta: 'Cancelación sin costo hasta el ' + limiteTxt + '. Después, no hay devolución.',
+      formTitulo: paso === 'pago' ? 'Pago' : 'Tus datos', formSub: paso === 'pago' ? 'Revisa el total y completa los datos de la tarjeta.' : 'Los usamos para confirmar tu reserva. Los campos con * son obligatorios.',
+      resumenErr: s.msg, campos, fieldCols: movil ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', onSubmit: (e) => this.submit(e),
+      procesando: s.procesando, procesandoAria: s.procesando ? 'true' : 'false', btnOp: s.procesando ? 0.85 : 1,
+      btnTxt: paso === 'pago' ? (s.procesando ? 'Procesando pago…' : 'Pagar y confirmar · ' + this.usd(total)) : 'Continuar al pago',
+      btnNota: paso === 'pago' ? (s.procesando ? 'No cierres esta página.' : 'Pago simulado: no se realiza ningún cobro.') : 'Todavía no se te cobrará nada.',
+      esConf: paso === 'confirmada' && !s.err, loc: s.loc, copiarTxt: s.copiado ? 'Copiado' : 'Copiar',
+      copiar: () => { try { navigator.clipboard.writeText(s.loc); } catch (e) {} this.setState({ copiado: true }); clearTimeout(this.cpT); this.cpT = setTimeout(() => this.setState({ copiado: false }), 2000); },
+      confSub: 'Guarda tu localizador: lo necesitas para consultar o cancelar tu reserva' + (s.F.correo ? ' con el correo ' + s.F.correo : '') + '.',
+      confCols: chico ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      confDatos: [{ l: 'Huésped', v: (s.F.nombre + ' ' + s.F.apellido).trim() || '—' }, { l: 'Alojamiento', v: 'Hotel Mansión Alcázar' }, { l: 'Habitación', v: 'Doble superior' }, { l: 'Huéspedes', v: s.huespedes + (s.huespedes === 1 ? ' adulto' : ' adultos') }, { l: 'Entrada', v: this.fecha(s.entrada) + ', desde 15:00' }, { l: 'Salida', v: this.fecha(s.salida) + ', hasta 12:00' }, { l: 'Noches', v: String(noches) }, { l: 'Total (pago simulado)', v: this.usd(total) }],
+      pasosAhora: [{ n: '1', t: 'Guarda tu localizador', d: 'Con él y tu correo puedes ver o cancelar la reserva desde Mis reservas.' }, { n: '2', t: 'Puedes cancelar sin costo hasta el ' + limiteTxt, d: 'Después de esa fecha la reserva no tiene devolución.' }, { n: '3', t: 'Llega a partir de las 15:00', d: 'Presenta tu documento de identidad en la recepción.' }],
+      irMisReservas: () => {}, abrirCancelar: () => this.abrirDlg(),
+      esCancelada: paso === 'cancelada' && !s.err, fechasCortas, reembolsoTxt, reembolsoNota,
+      esError: !!E, eTitulo: E ? E.t : '', eTexto: E ? E.x : '', eIcon: E ? E.i : '', ePrecio: s.err === 'precio',
+      precioAntes: this.usd(s.precioNoche) + ' / noche', precioNuevo: '$279 USD / noche', totalAntes: 'Total ' + this.usd(total), totalNuevo: 'Total ' + this.usd(nuevoTotal),
+      eAcciones: E ? E.a.map((a) => ({ t: a.t, click: a.go, bg: a.p ? '#1C393F' : '#fff', fg: a.p ? '#fff' : '#1C393F' })) : [],
+      dlgOpen: s.dlg, dlgRef: this.dlgRef, dlgKey: (e) => this.trap(e), cerrarCancelar: () => this.cerrarDlg(),
+      dlgAlign: chico ? 'flex-end' : 'center', dlgPad: chico ? '0' : '16px', dlgRadius: chico ? '20px 20px 0 0' : '20px',
+      condiciones: [{ t: 'Cancelación sin costo hasta 48 horas antes de la llegada: hasta el ' + limiteTxt + '.' }, { t: 'Si cancelas después de esa fecha o no llegas, no hay devolución.' }],
+      confirmarCancelar: () => { this.setState({ dlg: false, paso: 'cancelada' }); this.top(); this.focusSel('#canc-t'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

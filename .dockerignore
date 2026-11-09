@@ -1,0 +1,27 @@
+node_modules
+dist
+npm-debug.log*
+*.tsbuildinfo
+
+# Secretos y configuración local (VITE_API_URL se pasa como build arg)
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+.vscode
+.idea
+
+# No hacen falta para compilar
+.impeccable
+.thumbnail
+uploads
+docs
+*.dc.html
+Dockerfile
+.dockerignore
+README.md
+
+# Pruebas de navegador: no hacen falta en la imagen
+e2e

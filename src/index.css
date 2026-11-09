@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fraunces/standard.css";
+
+/* Modo oscuro pendiente (ver docs/diseno/sistema-visual.md): la variante existe
+   para los componentes de shadcn, pero no se define paleta oscura todavía. */
+@custom-variant dark (&:is(.dark *));
+
+/* Fuente de verdad de la paleta: docs/diseno/sistema-visual.md */
+:root {
+    /* Marca */
+    --gunmetal: #1C393F;
+    --gunmetal-hover: #2A525A;
+    --ecru: #B7A85C;
+    --text-secondary: #4B6166;
+    --success: #3E8E5A;
+    --error: #B3382C;
+
+    /* Superficies y texto (decisión del 2026-10-12) */
+    --white: #FFFFFF;
+    --surface-muted: #F4F4F4;
+    --ink: #111111;
+
+    /* El crema existe SOLO en líneas y separadores: nunca en tarjetas, botones,
+       etiquetas, estados ni texto. */
+    --border-warm: #E6D5AE;
+    --dutch-white: #F7E5C1;
+
+    /* REGLA: todo texto o ícono sobre fondo oscuro es blanco. Nunca crema ni Ecru. */
+    --on-dark: #FFFFFF;
+
+    /* Tokens de shadcn/ui asignados a la paleta */
+    --background: var(--white);
+    --foreground: var(--ink);
+    --card: var(--white);
+    --card-foreground: var(--ink);
+    --popover: var(--white);
+    --popover-foreground: var(--ink);
+    --primary: var(--gunmetal);
+    --primary-hover: var(--gunmetal-hover);
+    --primary-foreground: var(--on-dark);
+    --secondary: var(--surface-muted);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-muted);
+    --muted-foreground: var(--text-secondary);
+    /* En shadcn "accent" es la superficie de hover y selección: aquí es gris claro.
+       El acento de marca Ecru es el token --ecru (bg-ecru). */
+    --accent: var(--surface-muted);
+    --accent-foreground: var(--ink);
+    --destructive: var(--error);
+    --border: var(--border-warm);
+    --input: var(--border-warm);
+    --ring: var(--gunmetal-hover);
+    --radius: 1rem;
+}
+
+@theme inline {
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* Tokens propios de Cozy */
+    --color-on-dark: var(--on-dark);
+    --color-ink: var(--ink);
+    --color-surface-muted: var(--surface-muted);
+    --color-ecru: var(--ecru);
+    --color-success: var(--success);
+    --color-error: var(--error);
+
+    /* Formas: botones 12 px, tarjetas 16 a 24 px */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 1.5rem;
+    --radius-4xl: 1.5rem;
+}
+
+/* Movimiento: una sola definición para todas las pantallas (plan-frame, Fase 3).
+   Las curvas y duraciones vienen de las pantallas de Claude Design. */
+@theme {
+    /* Sombra solo para lo que flota (buscador, paneles). Las tarjetas no llevan sombra. */
+    --shadow-float: 0 18px 48px rgba(28, 57, 63, 0.16);
+
+    --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-sweep: cubic-bezier(0.76, 0, 0.24, 1);
+    --ease-wipe: cubic-bezier(0.25, 1, 0.5, 1);
+
+    --animate-au-focus: au-focus 1400ms var(--ease-expo) both;
+    --animate-au-drop: au-drop 750ms var(--ease-quint) both;
+    --animate-au-wipe: au-wipe 600ms var(--ease-wipe) both;
+    --animate-au-draw: au-draw 850ms var(--ease-sweep) both;
+    --animate-au-rise: au-rise 320ms var(--ease-expo) both;
+    --animate-au-pop: au-pop 200ms var(--ease-expo) both;
+    --animate-au-sheet: au-sheet 280ms var(--ease-expo) both;
+    --animate-au-fade: au-fade 200ms ease both;
+
+    @keyframes au-focus {
+        from { filter: blur(16px); transform: scale(1.06); }
+        to { filter: blur(0); transform: scale(1); }
+    }
+    @keyframes au-drop {
+        from { transform: translateY(-1em); opacity: 0; }
+        to { transform: none; opacity: 1; }
+    }
+    @keyframes au-wipe {
+        from { clip-path: inset(0 100% 0 0); }
+        to { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes au-draw {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+    @keyframes au-rise {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: none; }
+    }
+    @keyframes au-pop {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: none; }
+    }
+    @keyframes au-sheet {
+        from { transform: translateY(100%); }
+        to { transform: none; }
+    }
+    @keyframes au-fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+    }
+  html {
+    @apply font-sans;
+    }
+  h1, h2, h3, h4 {
+    @apply font-heading;
+    }
+  /* Superficies del navegador tematizadas con la paleta */
+  ::selection {
+    background: var(--gunmetal);
+    color: var(--on-dark);
+    }
+  html {
+    caret-color: var(--gunmetal);
+    scrollbar-color: var(--text-secondary) var(--white);
+    }
+  /* Íconos lineales de trazo 1.5 */
+  svg[class*="lucide"] {
+    stroke-width: 1.5;
+    }
+  /* Movimiento reducido: sin animaciones ni transiciones, y desplazamiento inmediato.
+     Lo que se anima con JavaScript consulta usePrefersReducedMotion. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+      }
+    }
+}

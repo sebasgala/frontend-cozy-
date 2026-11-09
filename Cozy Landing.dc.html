@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy — Quédate donde se siente bien</title>
+<meta property="og:title" content="Cozy — Quédate donde se siente bien">
+<meta property="og:image" content="assets/cozy-dusk.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#fff;color:#1C393F;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C393F;text-decoration:none}
+a:hover{color:#2A525A}
+input,button{font:inherit}
+@keyframes au-focus{from{filter:blur(16px);transform:scale(1.06)}to{filter:blur(0);transform:scale(1)}}
+@keyframes au-drop{from{transform:translateY(-1em);opacity:0}to{transform:none;opacity:1}}
+@keyframes au-drop-label{from{transform:translateY(calc(-100% - .6em))}to{transform:none}}
+@keyframes au-pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes au-sheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes au-soft{from{opacity:0}to{opacity:1}}
+@keyframes au-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes au-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="font-family:Inter,system-ui,sans-serif;background:#fff;color:#1C393F;overflow-x:clip">
+
+<sc-if value="{{ abierto }}" hint-placeholder-val="{{ false }}">
+<div style="display:contents">
+<div onClick="{{ cerrar }}" aria-hidden="true" style="position:fixed;inset:0;z-index:90;background:{{ velo }}"></div>
+<div ref="{{ popRef }}" role="dialog" aria-modal="true" aria-label="{{ popLabel }}" onKeyDown="{{ onPopKey }}" style="position:fixed;z-index:91;left:{{ pLeft }};top:{{ pTop }};bottom:{{ pBottom }};width:{{ pWidth }};max-height:{{ pMax }};overflow:auto;background:#fff;color:#1C393F;border-radius:{{ pRadius }};box-shadow:0 24px 64px rgba(28,57,63,.28),0 2px 8px rgba(28,57,63,.08);animation:{{ pAnim }}">
+<sc-if value="{{ isFechas }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;padding:12px 20px 16px">
+<button type="button" aria-label="Mes anterior" onClick="{{ prevMes }}" disabled="{{ prevDis }}" style="position:absolute;top:12px;left:12px;z-index:1;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:#1C393F;cursor:pointer;opacity:{{ prevOp }};display:flex;align-items:center;justify-content:center" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button type="button" aria-label="Mes siguiente" onClick="{{ nextMes }}" disabled="{{ nextDis }}" style="position:absolute;top:12px;right:12px;z-index:1;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:#1C393F;cursor:pointer;opacity:{{ nextOp }};display:flex;align-items:center;justify-content:center" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+<div style="display:grid;grid-template-columns:{{ gridCols }};gap:32px">
+<sc-for list="{{ meses }}" as="mes" hint-placeholder-count="1">
+<div role="group" aria-label="{{ mes.label }}">
+<div style="height:44px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500">{{ mes.label }}</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:8px;font-size:11px;font-weight:500;letter-spacing:.1em;color:#4B6166;text-align:center"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+<sc-for list="{{ mes.semanas }}" as="sem" hint-placeholder-count="5">
+<div role="row" style="display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid #EAEAEA">
+<sc-for list="{{ sem.dias }}" as="d" hint-placeholder-count="7">
+<div style="background:{{ d.band }};display:flex;justify-content:center;align-items:center;height:48px">
+<button type="button" data-iso="{{ d.iso }}" tabindex="{{ d.tab }}" disabled="{{ d.dis }}" aria-hidden="{{ d.ariaHidden }}" aria-label="{{ d.aria }}" aria-pressed="{{ d.pressed }}" onClick="{{ d.click }}" onMouseEnter="{{ d.enter }}" style="position:relative;visibility:{{ d.vis }};width:40px;height:40px;border-radius:50%;border:0;background:{{ d.bg }};color:{{ d.color }};font-family:inherit;font-size:15px;font-weight:{{ d.weight }};cursor:{{ d.cursor }};padding:0" style-focus="outline:2px solid #1C393F;outline-offset:2px">{{ d.n }}<span style="position:absolute;bottom:5px;left:50%;margin-left:-2px;width:4px;height:4px;border-radius:50%;background:{{ d.dot }}"></span></button>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid #EAEAEA">
+<span aria-live="polite" style="font-size:14px;font-weight:500">{{ resumen }}</span>
+<div style="display:flex;align-items:center;gap:8px"><button type="button" onClick="{{ borrar }}" style="min-height:44px;padding:0 14px;border:0;border-radius:12px;background:transparent;color:#1C393F;font-weight:500;font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F">Borrar</button><button type="button" onClick="{{ cerrar }}" style="min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:500;font-size:14px;cursor:pointer" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:2px">Listo</button></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ isDestino }}" hint-placeholder-val="{{ false }}">
+<div style="padding:20px 0 8px">
+<div style="padding:0 20px 8px;font-size:17px;font-weight:500">Elige un destino</div>
+<div style="max-height:min(380px,55vh);overflow:auto;scrollbar-width:thin;scrollbar-color:#B7A85C #fff;padding-bottom:8px">
+<sc-for list="{{ grupos }}" as="g" hint-placeholder-count="3">
+<div role="group" aria-label="{{ g.pais }}">
+<div style="padding:14px 20px 4px;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#4B6166">{{ g.pais }}</div>
+<sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+<button type="button" data-dest="{{ it.id }}" onClick="{{ it.pick }}" style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;min-height:56px;padding:8px 20px;border:0;background:transparent;text-align:left;cursor:pointer;color:#1C393F;font-family:inherit" style-hover="background:#F7E5C1" style-focus="background:#F7E5C1;outline:2px solid #1C393F;outline-offset:-2px">
+<span style="width:40px;height:40px;border-radius:50%;background:{{ it.thumb }};color:#F7E5C1;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px">{{ it.inicial }}</span>
+<span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:500;font-size:15px">{{ it.nombre }}</span><span style="font-size:13px;color:#4B6166">{{ it.tipo }}</span></span>
+<span style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500"><span>Desde ${{ it.precio }}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ it.chk }}"><path d="M5 12l5 5 9-10"></path></svg></span>
+</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ isHuespedes }}" hint-placeholder-val="{{ false }}">
+<div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+<div style="font-size:17px;font-weight:500">Huéspedes</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+<button type="button" onClick="{{ menos }}" aria-label="Quitar huésped" style="width:44px;height:44px;border-radius:12px;border:1px solid #1C393F;background:transparent;color:#1C393F;cursor:pointer;font-size:18px" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:2px">−</button>
+<span aria-live="polite" style="font-size:16px;font-weight:500">{{ huespedesTxt }}</span>
+<button type="button" onClick="{{ mas }}" aria-label="Agregar huésped" style="width:44px;height:44px;border-radius:12px;border:1px solid #1C393F;background:transparent;color:#1C393F;cursor:pointer;font-size:18px" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:2px">+</button>
+</div>
+<div style="display:flex;justify-content:flex-end"><button type="button" onClick="{{ cerrar }}" style="min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:500;font-size:14px;cursor:pointer" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:2px">Listo</button></div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+<nav ref="{{ navRef }}" aria-label="Principal" style="position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid #EAEAEA;transform:translateY(-100%);transition:transform 420ms cubic-bezier(.16,1,.3,1)">
+  <div style="max-width:1280px;margin:0 auto;height:64px;padding:0 clamp(20px,5vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="#" aria-label="Cozy" style="display:flex;align-items:center;height:64px;margin:0 -10px"><img src="assets/cozy-logo-cream.png" alt="Cozy" style="height:64px;width:auto;display:block;filter:brightness(0) saturate(100%) invert(21%) sepia(14%) saturate(900%) hue-rotate(143deg) brightness(92%)"></a>
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:clamp(32px,5vw,64px);font-weight:700;font-size:14px">
+        <a href="#destacados">Explorar</a><a href="#destacados">Ofertas</a><a href="#moda">Destinos</a>
+      </div>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="font-size:13px;font-weight:700;color:#4B6166">ES</span>
+      <a href="#" style="background:#1C393F;color:#fff;font-weight:500;font-size:14px;padding:10px 18px;border-radius:12px" style-hover="background:#2A525A;color:#fff">Ingresar</a>
+    </div>
+  </div>
+</nav>
+
+<section ref="{{ wrapRef }}" data-screen-label="Hero" style="position:relative;height:200vh;background:#fff">
+  <div style="position:sticky;top:0;height:100vh;overflow:hidden">
+    <div ref="{{ clipRef }}" style="position:absolute;inset:0;background:#1C393F;clip-path:inset(0 0 0 0)"><div style="position:absolute;inset:0;animation:au-focus 1400ms cubic-bezier(.16,1,.3,1) both;will-change:filter,transform">
+      <video ref="{{ videoRef }}" src="assets/cozy-hero.mp4" poster="assets/cozy-sunrise.png" muted playsInline preload="auto" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:42% 50%"></video>
+      <img ref="{{ duskRef }}" src="assets/cozy-dusk.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:42% 50%;opacity:0">
+    </div>
+    <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(28,57,63,.62) 0%,rgba(28,57,63,0) 42%);pointer-events:none"></div></div>
+
+    <header style="position:absolute;top:0;left:0;right:0;padding:0 clamp(20px,5vw,56px);color:#F7E5C1">
+      <div style="height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+        <a href="#" aria-label="Cozy" style="display:flex;align-items:center;height:64px;margin:0 -10px;animation:au-drop 750ms cubic-bezier(.22,1,.36,1) 1000ms both"><img src="assets/cozy-logo-cream.png" alt="Cozy" style="height:64px;width:auto;display:block"></a>
+        <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:clamp(32px,5vw,64px);font-weight:700;font-size:14px">
+            <a href="#destacados" style="color:#F7E5C1;animation:au-drop 750ms cubic-bezier(.22,1,.36,1) 1080ms both">Explorar</a>
+            <a href="#destacados" style="color:#F7E5C1;animation:au-drop 750ms cubic-bezier(.22,1,.36,1) 1130ms both">Ofertas</a>
+            <a href="#moda" style="color:#F7E5C1;animation:au-drop 750ms cubic-bezier(.22,1,.36,1) 1180ms both">Destinos</a>
+          </div>
+        </sc-if>
+        <div style="display:flex;align-items:center;gap:16px">
+          <span style="font-size:13px;font-weight:700;animation:au-drop 600ms cubic-bezier(.22,1,.36,1) 1280ms both">ES</span>
+          <a href="#" style="background:#F7E5C1;color:#1C393F;font-weight:500;font-size:14px;padding:10px 18px;border-radius:12px;animation:au-wipe 600ms cubic-bezier(.25,1,.5,1) 1320ms both" style-hover="background:#fff;color:#1C393F">Ingresar</a>
+        </div>
+      </div>
+      <div style="height:1px;background:rgba(247,229,193,.55);transform-origin:left;animation:au-draw 850ms cubic-bezier(.76,0,.24,1) 540ms both"></div>
+      </header>
+
+    <div ref="{{ headRef }}" style="position:absolute;left:clamp(20px,5vw,56px);right:clamp(20px,5vw,56px);bottom:clamp(32px,8vh,72px);max-width:620px;color:#F7E5C1">
+            <p style="margin:16px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.5;max-width:460px;text-wrap:pretty;animation:au-drop 1050ms cubic-bezier(.16,1,.3,1) 480ms both">Hoteles, cabañas y casas con disponibilidad real y precio final desde el primer clic.</p>
+    </div>
+
+    <form ref="{{ panelRef }}" onSubmit="{{ onSearch }}" noValidate aria-label="Buscar alojamiento" style="position:absolute;left:50%;bottom:clamp(16px,4vh,40px);width:min(1120px,calc(100% - 32px));transform:translate(-50%,40px);opacity:0;pointer-events:none;background:#fff;border-radius:24px;padding:20px;box-shadow:0 18px 48px rgba(28,57,63,.18),0 2px 8px rgba(28,57,63,.06);display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:stretch">
+<button type="button" aria-haspopup="dialog" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #EAEAEA;cursor:pointer;text-align:left;color:#1C393F;font-family:inherit" data-field="destino" onClick="{{ abrirDestino }}" style-hover="border-color:#1C393F" style-focus="outline:2px solid #1C393F;outline-offset:2px"><span style="font-size:13px;font-weight:500;color:#1C393F">Destino</span><span style="font-size:15px;line-height:28px;color:{{ cDestino }}">{{ destinoTxt }}</span></button>
+<button type="button" aria-haspopup="dialog" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #EAEAEA;cursor:pointer;text-align:left;color:#1C393F;font-family:inherit" data-field="entrada" onClick="{{ abrirEntrada }}" style-hover="border-color:#1C393F" style-focus="outline:2px solid #1C393F;outline-offset:2px"><span style="font-size:13px;font-weight:500;color:#1C393F">Entrada</span><span style="font-size:15px;line-height:28px;color:{{ cEntrada }}">{{ entradaTxt }}</span></button>
+<button type="button" aria-haspopup="dialog" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #EAEAEA;cursor:pointer;text-align:left;color:#1C393F;font-family:inherit" data-field="salida" onClick="{{ abrirSalida }}" style-hover="border-color:#1C393F" style-focus="outline:2px solid #1C393F;outline-offset:2px"><span style="font-size:13px;font-weight:500;color:#1C393F">Salida</span><span style="font-size:15px;line-height:28px;color:{{ cSalida }}">{{ salidaTxt }}</span></button>
+<button type="button" aria-haspopup="dialog" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #EAEAEA;cursor:pointer;text-align:left;color:#1C393F;font-family:inherit" data-field="huespedes" onClick="{{ abrirHuespedes }}" style-hover="border-color:#1C393F" style-focus="outline:2px solid #1C393F;outline-offset:2px"><span style="font-size:13px;font-weight:500;color:#1C393F">Huéspedes</span><span style="font-size:15px;line-height:28px;color:{{ cHuespedes }}">{{ huespedesTxt }}</span></button>
+<button type="submit" style="min-height:64px;border:0;border-radius:14px;background:#1C393F;color:#fff;font-weight:500;font-size:15px;padding:0 20px;cursor:pointer;opacity:{{ btnOp }};transition:background 200ms,opacity 200ms" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px">Buscar alojamiento</button>
+<sc-if value="{{ errorMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="grid-column:1 / -1;margin:2px 4px;font-size:13px;font-weight:500;color:#1C393F">{{ errorMsg }}</p></sc-if>
+</form>
+  </div>
+</section>
+
+<section id="moda" data-screen-label="Destinos de moda" style="background:#F4F4F4;padding:clamp(64px,9vw,112px) 0">
+<div style="max-width:1280px;margin:0 auto;padding:0 clamp(20px,5vw,56px)">
+<div data-reveal style="margin-bottom:clamp(28px,4vw,44px)"><h2 style="margin:0;font-weight:500;font-size:clamp(32px,4vw,48px);line-height:1.1;letter-spacing:-.03em;text-wrap:balance">Destinos de moda</h2><p style="margin:12px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.5;color:#4B6166">Los lugares más buscados por nuestra comunidad viajera.</p></div>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:{{ modaGap }}">
+<sc-for list="{{ moda }}" as="c" hint-placeholder-count="5">
+<a data-reveal href="#" onClick="{{ c.click }}" onMouseEnter="{{ c.enter }}" onMouseLeave="{{ c.leave }}" aria-label="{{ c.aria }}" style="position:relative;display:block;grid-column:{{ c.span }};height:{{ c.h }};border-radius:20px;overflow:hidden;background:#1C393F;color:#fff;transition:transform 320ms cubic-bezier(.16,1,.3,1)" style-hover="transform:translateY(-4px)" style-focus="outline:2px solid #1C393F;outline-offset:3px">
+<div style="position:absolute;inset:0;transition:transform 600ms cubic-bezier(.16,1,.3,1);transform:{{ c.zoom }}">
+<sc-if value="{{ c.foto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ c.alt }}" style="width:100%;height:100%;background:{{ c.fondo }}"></div></sc-if>
+<sc-if value="{{ c.sinFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:linear-gradient(135deg,#1C393F,#B7A85C);display:flex;align-items:flex-end;padding:16px;font-size:12px;color:#F7E5C1">Foto pendiente</div></sc-if>
+</div>
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:55%;background:linear-gradient(to bottom,rgba(28,57,63,.72),rgba(28,57,63,0))"></div>
+<div style="position:absolute;top:20px;left:22px;right:22px;display:flex;flex-direction:column;gap:2px"><span style="font-size:clamp(24px,2.4vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.1;color:#fff">{{ c.nombre }}</span><span style="font-size:14px;font-weight:500;color:#fff">{{ c.pais }}</span></div>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Planificador" style="background:#fff;padding:clamp(64px,9vw,112px) 0">
+<div style="max-width:1280px;margin:0 auto;padding:0 clamp(20px,5vw,56px)">
+<div data-reveal style="margin-bottom:clamp(24px,3vw,32px)"><h2 style="margin:0;font-weight:500;font-size:clamp(32px,4vw,48px);line-height:1.1;letter-spacing:-.03em;text-wrap:balance">Planifica tu viaje de forma rápida y sencilla</h2><p style="margin:12px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.5;color:#4B6166">Elige un estilo y descubre dónde quedarte.</p></div>
+<div role="tablist" aria-label="Estilo de viaje" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 4px;margin:0 -2px 28px">
+<sc-for list="{{ chips }}" as="k" hint-placeholder-count="5">
+<button type="button" role="tab" aria-selected="{{ k.sel }}" onClick="{{ k.click }}" style="flex:none;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid {{ k.border }};background:{{ k.bg }};color:#1C393F;font-family:inherit;font-size:15px;font-weight:{{ k.weight }};white-space:nowrap;cursor:pointer;transition:background 200ms,border-color 200ms" style-focus="outline:2px solid #1C393F;outline-offset:2px">{{ k.label }}</button>
+</sc-for>
+</div>
+<div style="position:relative">
+<div ref="{{ carRef }}" tabindex="0" role="region" aria-label="Destinos del estilo elegido" onScroll="{{ onCarScroll }}" onKeyDown="{{ onCarKey }}" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 2px;border-radius:12px" style-focus="outline:2px solid #1C393F;outline-offset:2px">
+<sc-for list="{{ plan }}" as="c" hint-placeholder-count="5">
+<a href="#" onClick="{{ c.click }}" onMouseEnter="{{ c.enter }}" onMouseLeave="{{ c.leave }}" style="flex:none;width:212px;scroll-snap-align:start;display:flex;flex-direction:column;gap:12px;color:#1C393F;border-radius:16px" style-focus="outline:2px solid #1C393F;outline-offset:3px">
+<div style="position:relative;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:#1C393F"><div style="position:absolute;inset:0;transition:transform 600ms cubic-bezier(.16,1,.3,1);transform:{{ c.zoom }}">
+<sc-if value="{{ c.foto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ c.alt }}" style="width:100%;height:100%;background:{{ c.fondo }}"></div></sc-if>
+<sc-if value="{{ c.sinFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:linear-gradient(135deg,#1C393F,#B7A85C);display:flex;align-items:flex-end;padding:16px;font-size:12px;color:#F7E5C1">Foto pendiente</div></sc-if>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:16px">{{ c.nombre }}</span><span style="font-size:14px;color:#4B6166">{{ c.precioTxt }}</span></div>
+</a>
+</sc-for>
+</div>
+<button type="button" aria-label="Ver anteriores" onClick="{{ irIzq }}" style="display:{{ dispL }};position:absolute;left:-6px;top:120px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #EAEAEA;box-shadow:0 4px 14px rgba(28,57,63,.14);align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button type="button" aria-label="Ver siguientes" onClick="{{ irDer }}" style="display:{{ dispR }};position:absolute;right:-6px;top:120px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #EAEAEA;box-shadow:0 4px 14px rgba(28,57,63,.14);align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</section>
+
+<div style="background:#F4F4F4;padding-bottom:clamp(64px,9vw,112px)">
+<section id="destacados" ref="{{ destRef }}" data-screen-label="Destacados" style="max-width:1280px;margin:0 auto;padding:clamp(96px,12vw,160px) clamp(20px,5vw,56px) 0">
+  <h2 data-reveal style="margin:0 0 40px;font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:clamp(32px,4vw,48px);letter-spacing:-.02em">Alojamientos destacados</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px">
+    <sc-for list="{{ alojamientos }}" as="a" hint-placeholder-count="3">
+      <article data-reveal onMouseEnter="{{ a.enter }}" onMouseLeave="{{ a.leave }}" style="display:flex;flex-direction:column;gap:16px;transition:transform 320ms cubic-bezier(.16,1,.3,1);cursor:pointer" style-hover="transform:translateY(-4px)">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/3;background:#F4F4F4">
+          <div style="position:absolute;inset:0;transition:transform 700ms cubic-bezier(.16,1,.3,1);transform:{{ a.zoom }}">
+            <sc-if value="{{ a.foto }}" hint-placeholder-val="{{ false }}">
+              <div role="img" aria-label="{{ a.nombre }}" style="width:100%;height:100%;background:{{ a.fondo }}"></div>
+            </sc-if>
+            <sc-if value="{{ a.sinFoto }}" hint-placeholder-val="{{ true }}">
+              <div style="width:100%;height:100%;background:repeating-linear-gradient(135deg,#F4F4F4 0 12px,#ECECEC 12px 24px);display:flex;align-items:flex-end;padding:16px;font-family:Inter,system-ui,sans-serif;font-size:11px;color:#4B6166">foto · {{ a.nombre }}</div>
+            </sc-if>
+          </div>
+          <span style="position:absolute;top:14px;left:14px;background:#B7A85C;color:#1C393F;font-size:12px;font-weight:500;padding:6px 10px;border-radius:8px">{{ a.badge }}</span>
+          <button type="button" onClick="{{ a.toggle }}" aria-label="Guardar en favoritos" aria-pressed="{{ a.pressed }}" style="position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:12px;border:0;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="{{ a.heartFill }}" stroke="#1C393F" stroke-width="1.5" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+          </button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <h3 style="margin:0;font-weight:500;font-size:18px">{{ a.nombre }}</h3>
+            <span style="color:#4B6166;font-size:14px">{{ a.ciudad }}</span>
+          </div>
+          <div style="text-align:right;white-space:nowrap"><span style="font-weight:700;font-size:18px">{{ a.precio }}</span><span style="color:#4B6166;font-size:14px"> / noche</span></div>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+</div>
+
+<section id="ofertas" data-screen-label="Ofertas" style="max-width:1280px;margin:0 auto;padding:clamp(96px,12vw,160px) clamp(20px,5vw,56px) 0">
+<div data-reveal style="margin-bottom:clamp(24px,3vw,36px)"><h2 style="margin:0;font-weight:500;font-size:clamp(32px,4vw,48px);line-height:1.1;letter-spacing:-.03em;text-wrap:balance">Ahorra más con las ofertas por tiempo limitado</h2><p style="margin:12px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.5;color:#4B6166">Disponibles para estas fechas: {{ ofFechas }}. {{ ofQuedan }}</p></div>
+<div style="position:relative">
+<div ref="{{ ofRef }}" tabindex="0" role="region" aria-label="Ofertas por tiempo limitado" onScroll="{{ onOfScroll }}" onKeyDown="{{ onOfKey }}" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 2px 8px;border-radius:12px" style-focus="outline:2px solid #1C393F;outline-offset:2px">
+<sc-for list="{{ ofertas }}" as="o" hint-placeholder-count="4">
+<article data-reveal style="flex:none;width:300px;scroll-snap-align:start;background:#fff;border:1px solid #EAEAEA;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer" onClick="{{ o.click }}">
+<div style="position:relative;aspect-ratio:4/3;background:#1C393F;overflow:hidden">
+<sc-if value="{{ o.foto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ o.nombre }}" style="position:absolute;inset:0;background:{{ o.fondo }}"></div></sc-if>
+<sc-if value="{{ o.sinFoto }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;background:linear-gradient(135deg,#1C393F,#B7A85C);display:flex;align-items:flex-end;padding:16px;font-size:12px;color:#F7E5C1">Foto pendiente</div></sc-if>
+<span style="position:absolute;top:14px;left:14px;background:#1C393F;color:#F7E5C1;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px">{{ o.descTxt }}</span>
+<button type="button" onClick="{{ o.toggle }}" aria-label="Guardar en favoritos" aria-pressed="{{ o.pressed }}" style="position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ o.heartFill }}" stroke="#1C393F" stroke-width="1.5" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></button>
+</div>
+<div style="padding:16px;display:flex;flex-direction:column;gap:6px;flex:1">
+<span style="align-self:flex-start;background:#B7A85C;color:#1C393F;font-size:12px;font-weight:700;padding:4px 8px;border-radius:6px">Oferta por tiempo limitado</span>
+<h3 style="margin:6px 0 0;font-weight:600;font-size:17px;line-height:1.3">{{ o.nombre }}</h3>
+<span style="font-size:14px;color:#4B6166">{{ o.ciudad }}</span>
+<div style="margin-top:auto;padding-top:14px;display:flex;justify-content:flex-end;align-items:baseline;gap:8px;white-space:nowrap"><span style="font-size:13px;color:#4B6166">2 noches</span><span style="font-size:14px;color:#4B6166;text-decoration:line-through">{{ o.antes }}</span><span style="font-weight:700;font-size:20px">{{ o.ahora }}</span></div>
+</div>
+</article>
+</sc-for>
+</div>
+<button type="button" aria-label="Ver anteriores" onClick="{{ ofIzq }}" style="display:{{ ofDispL }};position:absolute;left:-6px;top:110px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #EAEAEA;box-shadow:0 4px 14px rgba(28,57,63,.14);align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button type="button" aria-label="Ver siguientes" onClick="{{ ofDer }}" style="display:{{ ofDispR }};position:absolute;right:-6px;top:110px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #EAEAEA;box-shadow:0 4px 14px rgba(28,57,63,.14);align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</section>
+
+<section data-screen-label="Cierre" style="max-width:1280px;margin:0 auto;padding:clamp(96px,12vw,160px) clamp(20px,5vw,56px)">
+  <div data-reveal style="background:#1C393F;color:#F7E5C1;border-radius:24px;padding:clamp(48px,8vw,112px) clamp(24px,6vw,96px);display:flex;flex-direction:column;align-items:flex-start;gap:28px">
+    <h2 style="margin:0;color:#fff;font-family:Inter,system-ui,sans-serif;font-weight:400;font-size:clamp(40px,6vw,80px);line-height:1.02;letter-spacing:-.02em">Desde $45 por noche</h2>
+    <a href="#destacados" style="background:transparent;color:#fff;border:1px solid #fff;font-weight:500;padding:16px 26px;border-radius:12px" style-hover="background:rgba(255,255,255,.14);color:#fff" style-focus="outline:2px solid #fff;outline-offset:3px">Ver alojamientos</a>
+    <p style="margin:0;font-size:15px;color:#fff">Cancelación gratuita en la mayoría de las estancias.</p>
+  </div>
+</section>
+
+<footer style="border-top:1px solid #EAEAEA">
+  <div style="max-width:1280px;margin:0 auto;padding:32px clamp(20px,5vw,56px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;font-size:14px">
+    <div style="display:flex;flex-wrap:wrap;gap:24px">
+      <a href="#destacados">Explorar</a><a href="#moda">Destinos</a><a href="#">Ayuda</a><a href="#">Términos</a><a href="#">Privacidad</a><a href="Cozy Admin.dc.html#admin">Administración</a>
+    </div>
+    <span style="color:#4B6166">© 2026 Cozy</span>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;buscador&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;scroll&quot;,&quot;siempre&quot;],&quot;default&quot;:&quot;scroll&quot;,&quot;tsType&quot;:&quot;'scroll' | 'siempre'&quot;,&quot;section&quot;:&quot;Hero&quot;}}">
+class Component extends DCLogic {
+  // Mock REST response — replace with fetch('/api/...') later; markup reads only these fields.
+  static API = {
+    status: 200,
+    data: {
+      alojamientos: [
+        { id: 'aloj_001', nombre: 'Hotel boutique frente al mar', destino: 'Cartagena', pais: 'Colombia', ciudad: 'Cartagena, Colombia', precioPorNoche: 95, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Colombia' },
+        { id: 'aloj_002', nombre: 'Cabaña en el bosque', destino: 'Bariloche', pais: 'Argentina', ciudad: 'Bariloche, Argentina', precioPorNoche: 80, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Argentina' },
+        { id: 'aloj_003', nombre: 'Casona colonial con patio', destino: 'Oaxaca', pais: 'México', ciudad: 'Oaxaca, México', precioPorNoche: 70, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'México' },
+        { id: 'aloj_004', nombre: 'Domo con vista a las estrellas', destino: 'Valle de Elqui', pais: 'Chile', ciudad: 'Valle de Elqui, Chile', precioPorNoche: 110, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Chile' },
+        { id: 'aloj_005', nombre: 'Casa de hacienda restaurada', destino: 'Mérida', pais: 'México', ciudad: 'Mérida, México', precioPorNoche: 65, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'México' },
+        { id: 'aloj_006', nombre: 'Departamento con terraza al mar', destino: 'Punta del Este', pais: 'Uruguay', ciudad: 'Punta del Este, Uruguay', precioPorNoche: 120, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Uruguay' },
+        { id: 'aloj_007', nombre: 'Hostal con vista a los Andes', destino: 'Cusco', pais: 'Perú', ciudad: 'Cusco, Perú', precioPorNoche: 45, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Perú' },
+        { id: 'aloj_008', nombre: 'Bungalow en la playa', destino: 'San Andrés', pais: 'Colombia', ciudad: 'San Andrés, Colombia', precioPorNoche: 130, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Colombia' },
+        { id: 'aloj_009', nombre: 'Cabaña con lago', destino: 'Valle de Bravo', pais: 'México', ciudad: 'Valle de Bravo, México', precioPorNoche: 90, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'México' },
+        { id: 'aloj_010', nombre: 'Casa de madera con vista al volcán', destino: 'Puerto Varas', pais: 'Chile', ciudad: 'Puerto Varas, Chile', precioPorNoche: 100, moneda: 'USD', fotos: [], estado: 'disponible', badge: 'Chile' }
+      ],
+      destinos: [
+        { id: 'dest_001', nombre: 'Cartagena', destacado: true, estilos: ['playa','historicas','romantico'], imagen: null, pais: 'Colombia', precioDesde: 95, fotos: [], estado: 'activo' },
+        { id: 'dest_002', nombre: 'Bariloche', destacado: true, estilos: ['montana','familia'], imagen: null, pais: 'Argentina', precioDesde: 80, fotos: [], estado: 'activo' },
+        { id: 'dest_003', nombre: 'Oaxaca', destacado: true, estilos: ['historicas'], imagen: null, pais: 'México', precioDesde: 70, fotos: [], estado: 'activo' },
+        { id: 'dest_004', nombre: 'Valle de Elqui', destacado: false, estilos: ['montana','romantico'], imagen: null, pais: 'Chile', precioDesde: 110, fotos: [], estado: 'activo' },
+        { id: 'dest_005', nombre: 'Mérida', destacado: false, estilos: ['historicas','familia'], imagen: null, pais: 'México', precioDesde: 65, fotos: [], estado: 'activo' },
+        { id: 'dest_006', nombre: 'Punta del Este', destacado: true, estilos: ['playa','romantico'], imagen: null, pais: 'Uruguay', precioDesde: 120, fotos: [], estado: 'activo' },
+        { id: 'dest_007', nombre: 'Cusco', destacado: false, estilos: ['historicas','montana'], imagen: null, pais: 'Perú', precioDesde: 45, fotos: [], estado: 'activo' },
+        { id: 'dest_008', nombre: 'San Andrés', destacado: true, estilos: ['playa','familia'], imagen: null, pais: 'Colombia', precioDesde: 130, fotos: [], estado: 'activo' },
+        { id: 'dest_009', nombre: 'Valle de Bravo', destacado: false, estilos: ['montana','romantico','familia'], imagen: null, pais: 'México', precioDesde: 90, fotos: [], estado: 'activo' },
+        { id: 'dest_010', nombre: 'Puerto Varas', destacado: false, estilos: ['montana','familia'], imagen: null, pais: 'Chile', precioDesde: 100, fotos: [], estado: 'activo' }
+      ],
+      testimonios: [
+        { id: 'test_001', nombre: 'Lucía Fernández', rol: 'Viaje en pareja, Mendoza', texto: 'El precio que vi fue el que pagué. Así de simple.', estado: 'publicado' },
+        { id: 'test_002', nombre: 'Andrés Rojas', rol: 'Consultor, viaja cada mes', texto: 'Reservo en dos minutos y sé exactamente qué pasa si tengo que cancelar.', estado: 'publicado' },
+        { id: 'test_003', nombre: 'Camila Ortiz', rol: 'Viaje familiar, Bariloche', texto: 'La cabaña estaba tal cual las fotos. Volvimos el invierno siguiente.', estado: 'publicado' }
+      ]
+    }
+  };
+
+  state = { wide: true, favs: {}, hover: null, destino: '', entrada: '', salida: '', huespedes: 2, filtro: '', destinoId: '', ofL: false, ofR: false, estilo: 'playa', canL: false, canR: false, hoverCard: null, abierto: null, picking: 'entrada', base: { y: new Date().getFullYear(), m: new Date().getMonth() }, hv: null, focusIso: '', pos: {}, ayuda: '' };
+  popRef = React.createRef(); carRef = React.createRef(); ofRef = React.createRef();
+  clipRef = React.createRef();
+  rootRef = React.createRef(); wrapRef = React.createRef(); videoRef = React.createRef(); duskRef = React.createRef();
+  headRef = React.createRef(); panelRef = React.createRef(); navRef = React.createRef(); destRef = React.createRef();
+
+  componentDidMount() {
+    this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.onResize = () => this.setState({ wide: window.innerWidth >= 760 });
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+    this.onKey = (e) => { if (e.key === 'Escape' && this.state.abierto) this.cerrar(); };
+    document.addEventListener('keydown', this.onKey);
+    setTimeout(() => this.updateArrows(), 400);
+    window.addEventListener('resize', () => this.updateArrows());
+    const v = this.videoRef.current;
+    if (v) { v.muted = true; v.pause(); }
+    this.t = 0;
+
+    if (this.reduce) {
+      this.wrapRef.current.style.height = '100vh';
+      if (v) v.style.display = 'none';
+      this.duskRef.current.style.opacity = '1';
+      const pn = this.panelRef.current;
+      pn.style.opacity = '1'; pn.style.transform = 'translate(-50%,0)'; pn.style.pointerEvents = 'auto';
+    } else if (v) {
+      // iOS needs a play/pause gesture-less unlock to allow seeking
+      const p = v.play(); if (p && p.then) p.then(() => v.pause()).catch(() => {});
+    }
+
+    const clamp = (x) => Math.min(1, Math.max(0, x));
+    const ease = (x) => x * x * (3 - 2 * x);
+    const tick = () => {
+      const w = this.wrapRef.current;
+      if (w) {
+        const r = w.getBoundingClientRect();
+        const total = Math.max(1, r.height - window.innerHeight);
+        const p = clamp(-r.top / total);
+        if (!this.reduce) {
+          if (v && v.duration) {
+            const target = clamp((p - 0.15) / 0.85) * v.duration;
+            this.t += (target - this.t) * 0.12;
+            if (!v.seeking && Math.abs(v.currentTime - this.t) > 0.008) v.currentTime = this.t;
+          }
+          const h = 1 - ease(clamp((p - 0.3) / 0.25));
+          const hd = this.headRef.current;
+          hd.style.opacity = h; hd.style.transform = `translateY(${(1 - h) * -16}px)`;
+        }
+        const always = this.props.buscador === 'siempre';
+        const q = (this.reduce || always) ? 1 : ease(clamp((p - 0.7) / 0.25));
+        const pn = this.panelRef.current;
+        if (!this.reduce) {
+          pn.style.opacity = q;
+          pn.style.transform = `translate(-50%, ${(1 - q) * 48}px)`;
+          pn.style.pointerEvents = (always || p >= 0.95) ? 'auto' : 'none';
+        }
+        // media edge sits at the panel's vertical centre, so the panel straddles hero and page
+        const gap = parseFloat(getComputedStyle(pn).bottom) || 24;
+        const edge = gap + pn.offsetHeight / 2;
+        this.clipRef.current.style.clipPath = `inset(0 0 ${(edge * q).toFixed(1)}px 0)`;
+        this.headRef.current.style.bottom = (edge * q + (this.state.wide ? 56 : 32) + (always || this.reduce ? pn.offsetHeight / 2 : 0)) + 'px';
+        this.navRef.current.style.transform = r.bottom <= 64 ? 'translateY(0)' : 'translateY(-100%)';
+      }
+      this.raf = requestAnimationFrame(tick);
+    };
+    this.raf = requestAnimationFrame(tick);
+
+    if (!this.reduce && 'IntersectionObserver' in window) {
+      const els = this.rootRef.current.querySelectorAll('[data-reveal]');
+      this.io = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.translate = '0 0'; this.io.unobserve(e.target); }
+      }), { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      els.forEach((el) => {
+        el.style.opacity = '0'; el.style.translate = '0 16px';
+        el.style.transition = [el.style.transition, 'opacity 380ms cubic-bezier(.16,1,.3,1)', 'translate 380ms cubic-bezier(.16,1,.3,1)'].filter(Boolean).join(', ');
+        this.io.observe(el);
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this.onResize);
+    document.removeEventListener('keydown', this.onKey);
+    this.lock(false);
+    if (this.io) this.io.disconnect();
+  }
+
+
+  hoy() { const d = new Date(); return this.iso(d.getFullYear(), d.getMonth(), d.getDate()); }
+  iso(y, m, d) { return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
+  parse(i) { const p = i.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  fmt(i) {
+    if (!i) return '';
+    const d = this.parse(i);
+    return ['dom','lun','mar','mié','jue','vie','sáb'][d.getDay()] + ' ' + d.getDate() + ' ' + ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()];
+  }
+  lock(on) { const v = on ? 'hidden' : ''; document.documentElement.style.overflow = v; document.body.style.overflow = v; }
+  abrir(kind, field) {
+    const el = this.rootRef.current.querySelector('[data-field="' + field + '"]');
+    const vw = window.innerWidth, vh = window.innerHeight, wide = vw >= 640;
+    const r = el.getBoundingClientRect();
+    const W = kind === 'fechas' ? 680 : kind === 'destino' ? 400 : 300;
+    const H = kind === 'fechas' ? 470 : kind === 'destino' ? 460 : 190;
+    let pos = { sheet: true };
+    if (wide) {
+      const sb = vh - r.bottom - 24, sa = r.top - 24;
+      const below = H <= sb ? true : H <= sa ? false : sb >= sa;
+      const space = Math.max(240, below ? sb : sa);
+      pos = { sheet: false, w: W, max: space, left: Math.max(16, Math.min(r.left, vw - W - 16)), top: below ? r.bottom + 8 : null, bottom: below ? null : vh - r.top + 8 };
+    }
+    this.opener = el;
+    const st = this.state;
+    const fi = st.entrada || this.hoy();
+    const p = fi.split('-').map(Number);
+    const next = { abierto: kind, pos, hv: null, ayuda: '', focusIso: fi };
+    if (kind === 'fechas') { next.picking = field === 'salida' && st.entrada ? 'salida' : 'entrada'; next.base = { y: p[0], m: p[1] - 1 }; }
+    this.setState(next, () => {
+      this.lock(true);
+      setTimeout(() => {
+        const pr = this.popRef.current; if (!pr) return;
+        const t = pr.querySelector('[data-iso][tabindex="0"]') || pr.querySelector('[data-dest="' + st.destinoId + '"]') || pr.querySelector('[data-dest]') || pr.querySelector('button:not([disabled])');
+        if (t) t.focus();
+      }, 40);
+    });
+  }
+  cerrar() {
+    this.setState({ abierto: null, hv: null });
+    this.lock(false);
+    const o = this.opener; if (o) setTimeout(() => o.focus(), 0);
+  }
+  pick(iso) {
+    this.setState((st) => {
+      if (st.picking === 'entrada' || !st.entrada || iso <= st.entrada) return { entrada: iso, salida: st.salida && st.salida <= iso ? '' : (st.picking === 'entrada' ? st.salida : ''), picking: 'salida', focusIso: iso, ayuda: '' };
+      return { salida: iso, picking: 'entrada', focusIso: iso, ayuda: '' };
+    });
+  }
+  mover(iso, delta) {
+    const d = this.parse(iso); d.setDate(d.getDate() + delta);
+    const ni = this.iso(d.getFullYear(), d.getMonth(), d.getDate());
+    if (ni < this.hoy()) return;
+    const n = window.innerWidth >= 640 ? 2 : 1;
+    const idx = d.getFullYear() * 12 + d.getMonth(), b = this.state.base.y * 12 + this.state.base.m;
+    let nb = b; if (idx < b) nb = idx; else if (idx > b + n - 1) nb = idx - (n - 1);
+    this.setState({ focusIso: ni, base: { y: Math.floor(nb / 12), m: nb % 12 } }, () => {
+      const t = this.popRef.current && this.popRef.current.querySelector('[data-iso="' + ni + '"]'); if (t) t.focus();
+    });
+  }
+  onPopKey(e) {
+    if (e.key === 'Tab') {
+      const f = Array.from(this.popRef.current.querySelectorAll('button:not([disabled])')).filter((b) => b.tabIndex >= 0 && b.style.visibility !== 'hidden');
+      if (!f.length) return;
+      const i = f.indexOf(document.activeElement);
+      const n = e.shiftKey ? (i <= 0 ? f.length - 1 : i - 1) : (i === f.length - 1 ? 0 : i + 1);
+      e.preventDefault(); f[n].focus(); return;
+    }
+    const iso = e.target.getAttribute && e.target.getAttribute('data-iso');
+    const dl = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+    if (iso && dl) { e.preventDefault(); this.mover(iso, dl); }
+  }
+  uiVals(s) {
+    const wide = window.innerWidth >= 640, n = wide ? 2 : 1, hoy = this.hoy();
+    const ab = s.abierto, pos = s.pos || {}, sheet = !!pos.sheet;
+    const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const meses = [];
+    if (ab === 'fechas') {
+      const end = s.salida || (s.picking === 'salida' && s.entrada && s.hv && s.hv > s.entrada ? s.hv : '');
+      for (let i = 0; i < n; i++) {
+        const idx = s.base.y * 12 + s.base.m + i, y = Math.floor(idx / 12), m = idx % 12;
+        const off = (new Date(y, m, 1).getDay() + 6) % 7, dim = new Date(y, m + 1, 0).getDate();
+        const cells = [];
+        for (let k = 0; k < Math.ceil((off + dim) / 7) * 7; k++) {
+          const dn = k - off + 1, blank = dn < 1 || dn > dim, iso = this.iso(y, m, blank ? 1 : dn);
+          if (blank) { cells.push({ iso: '', n: '', vis: 'hidden', dis: true, ariaHidden: 'true', tab: -1, band: 'transparent', bg: 'transparent', color: '#1C393F', weight: 400, cursor: 'default', dot: 'transparent', aria: '', pressed: 'false', click: () => {}, enter: () => {} }); continue; }
+          const dis = iso < hoy, isS = iso === s.entrada, isE = iso === s.salida, pe = !s.salida && iso === end;
+          const inR = s.entrada && end && iso > s.entrada && iso < end;
+          const band = inR ? '#F7E5C1' : (isS && end ? 'linear-gradient(to right, transparent 50%, #F7E5C1 50%)' : ((isE || pe) && s.entrada ? 'linear-gradient(to right, #F7E5C1 50%, transparent 50%)' : 'transparent'));
+          const sel = isS || isE;
+          cells.push({
+            iso, n: dn, vis: 'visible', dis, ariaHidden: 'false', tab: iso === s.focusIso ? 0 : -1, band,
+            bg: sel ? '#1C393F' : ((s.hv === iso && !dis) || pe ? '#F7E5C1' : 'transparent'),
+            color: sel ? '#fff' : (dis ? '#8FA0A3' : '#1C393F'), weight: sel ? 500 : 400, cursor: dis ? 'not-allowed' : 'pointer',
+            dot: iso === hoy ? '#B7A85C' : 'transparent', pressed: sel ? 'true' : 'false',
+            aria: dn + ' de ' + MESES[m].toLowerCase() + ' de ' + y,
+            click: () => this.pick(iso), enter: () => this.setState({ hv: iso })
+          });
+        }
+        const semanas = []; for (let k = 0; k < cells.length; k += 7) semanas.push({ dias: cells.slice(k, k + 7) });
+        meses.push({ label: MESES[m] + ' ' + y, semanas });
+      }
+    }
+    const cur = new Date(), atMin = s.base.y === cur.getFullYear() && s.base.m === cur.getMonth();
+    const shift = (k) => this.setState((st) => { const t = st.base.y * 12 + st.base.m + k; return { base: { y: Math.floor(t / 12), m: t % 12 } }; });
+    const noches = s.entrada && s.salida ? Math.round((this.parse(s.salida) - this.parse(s.entrada)) / 864e5) : 0;
+    const { data } = Component.API;
+    const tipoDe = {}; data.alojamientos.forEach((a) => { tipoDe[a.destino] = a.nombre; });
+    const orden = ['México','Colombia','Chile','Argentina','Uruguay','Perú'];
+    const grupos = orden.map((pais) => ({
+      pais,
+      items: data.destinos.filter((d) => d.estado === 'activo' && d.pais === pais).map((d) => ({
+        id: d.id, nombre: d.nombre, tipo: tipoDe[d.destino || d.nombre] || '', precio: d.precioDesde, inicial: d.nombre[0],
+        thumb: d.fotos && d.fotos[0] ? 'url(' + d.fotos[0] + ') center/cover' : 'linear-gradient(135deg,#1C393F,#B7A85C)',
+        chk: s.destinoId === d.id ? 1 : 0,
+        pick: () => {
+          this.setState({ destino: d.nombre, destinoId: d.id, abierto: null, ayuda: '' });
+          this.lock(false);
+          if (!s.entrada) setTimeout(() => this.abrir('fechas', 'entrada'), 30); else { const o = this.opener; if (o) setTimeout(() => o.focus(), 0); }
+        }
+      }))
+    })).filter((g) => g.items.length);
+    const ok = s.destino && s.entrada && s.salida;
+    const ph = '#4B6166', fg = '#1C393F';
+    return {
+      abierto: !!ab, isFechas: ab === 'fechas', isDestino: ab === 'destino', isHuespedes: ab === 'huespedes',
+      popRef: this.popRef, onPopKey: (e) => this.onPopKey(e),
+      popLabel: ab === 'fechas' ? 'Elige tus fechas' : ab === 'destino' ? 'Elige un destino' : 'Huéspedes',
+      velo: sheet ? 'rgba(28,57,63,.4)' : 'transparent',
+      pLeft: sheet ? '0' : pos.left + 'px', pTop: sheet || pos.top == null ? 'auto' : pos.top + 'px',
+      pBottom: sheet ? '0' : (pos.bottom == null ? 'auto' : pos.bottom + 'px'), pWidth: sheet ? '100%' : pos.w + 'px',
+      pRadius: sheet ? '24px 24px 0 0' : '20px', pMax: sheet ? '88vh' : pos.max + 'px',
+      pAnim: this.reduce ? 'none' : (sheet ? 'au-sheet 280ms cubic-bezier(.16,1,.3,1) both' : 'au-pop 200ms cubic-bezier(.16,1,.3,1) both'),
+      cerrar: () => this.cerrar(), gridCols: 'repeat(' + n + ',minmax(0,1fr))', meses, grupos,
+      prevMes: () => shift(-1), nextMes: () => shift(1), prevDis: atMin, prevOp: atMin ? 0.3 : 1, nextDis: false, nextOp: 1,
+      resumen: noches ? noches + (noches === 1 ? ' noche' : ' noches') : 'Elige tus fechas',
+      borrar: () => this.setState({ entrada: '', salida: '', picking: 'entrada', hv: null }),
+      abrirDestino: () => this.abrir('destino', 'destino'), abrirEntrada: () => this.abrir('fechas', 'entrada'),
+      abrirSalida: () => this.abrir('fechas', 'salida'), abrirHuespedes: () => this.abrir('huespedes', 'huespedes'),
+      destinoTxt: s.destino || '¿A dónde vas?', cDestino: s.destino ? fg : ph,
+      entradaTxt: s.entrada ? this.fmt(s.entrada) : 'Entrada', cEntrada: s.entrada ? fg : ph,
+      salidaTxt: s.salida ? this.fmt(s.salida) : 'Salida', cSalida: s.salida ? fg : ph,
+      huespedesTxt: s.huespedes + (s.huespedes === 1 ? ' huésped' : ' huéspedes'), cHuespedes: fg,
+      menos: () => this.setState((st) => ({ huespedes: Math.max(1, st.huespedes - 1) })),
+      mas: () => this.setState((st) => ({ huespedes: Math.min(16, st.huespedes + 1) })),
+      btnOp: ok ? 1 : 0.55, errorMsg: s.ayuda,
+      onSearch: (e) => {
+        e.preventDefault();
+        if (!ok) { this.setState({ ayuda: 'Elige destino y fechas' }); return; }
+        try { history.replaceState(null, '', '#resultados?destino=' + s.destinoId + '&entrada=' + s.entrada + '&salida=' + s.salida + '&huespedes=' + s.huespedes); } catch (err) {}
+        location.href = 'Cozy Resultados.dc.html?destino=' + s.destinoId + '&entrada=' + s.entrada + '&salida=' + s.salida + '&huespedes=' + s.huespedes;
+      }
+    };
+  }
+
+
+  updateArrows() {
+    const el = this.carRef.current; if (!el) return;
+    const canL = el.scrollLeft > 8, canR = el.scrollLeft + el.clientWidth < el.scrollWidth - 8;
+    const o = this.ofRef.current, ofL = !!o && o.scrollLeft > 8, ofR = !!o && o.scrollLeft + o.clientWidth < o.scrollWidth - 8;
+    if (canL !== this.state.canL || canR !== this.state.canR || ofL !== this.state.ofL || ofR !== this.state.ofR) this.setState({ canL, canR, ofL, ofR });
+  }
+  scrollCar(dir) { const el = this.carRef.current; if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: this.reduce ? 'auto' : 'smooth' }); }
+  setEstilo(k) {
+    this.setState({ estilo: k }, () => {
+      const el = this.carRef.current; if (!el) return;
+      el.scrollLeft = 0;
+      if (!this.reduce && el.animate) Array.from(el.children).forEach((c, i) => c.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 300, delay: i * 60, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' }));
+      this.updateArrows();
+    });
+  }
+  pickDest(d, e) {
+    e.preventDefault();
+    this.setState({ destino: d.nombre, destinoId: d.id, ayuda: '' });
+    const w = this.wrapRef.current; if (!w) return;
+    const top = w.getBoundingClientRect().top + window.scrollY + w.offsetHeight - window.innerHeight;
+    window.scrollTo({ top, behavior: this.reduce ? 'auto' : 'smooth' });
+  }
+  modaVals(s) {
+    const { data } = Component.API;
+    const act = data.destinos.filter((d) => d.estado === 'activo');
+    const card = (d, key) => ({
+      ...d, foto: d.imagen || (d.fotos && d.fotos[0]) || '', sinFoto: !(d.imagen || (d.fotos && d.fotos[0])),
+      fondo: (d.imagen || (d.fotos && d.fotos[0])) ? 'url(' + (d.imagen || d.fotos[0]) + ') center/cover' : 'none',
+      alt: d.nombre + ', ' + d.pais, aria: d.nombre + ', ' + d.pais + '. Elegir como destino',
+      zoom: s.hoverCard === key + d.id ? 'scale(1.04)' : 'scale(1)',
+      precioTxt: 'Desde $' + d.precioDesde + ' / noche',
+      click: (e) => this.pickDest(d, e),
+      enter: () => this.setState({ hoverCard: key + d.id }), leave: () => this.setState({ hoverCard: null })
+    });
+    const wide = s.wide;
+    const moda = ['Cartagena','San Andrés','Oaxaca','Bariloche','Punta del Este'].map((n) => act.find((d) => d.nombre === n)).filter(Boolean).map((d, i) => ({
+      ...card(d, 'm'), span: wide ? (i < 2 ? 'span 3' : 'span 2') : 'span 6', h: wide ? (i < 2 ? '340px' : '300px') : (i === 0 ? '280px' : '210px')
+    }));
+    const ES = [['playa','Playa y relax'],['montana','Montaña y naturaleza'],['historicas','Ciudades históricas'],['romantico','Escapadas románticas'],['familia','Con familia']];
+    return {
+      moda, modaGap: wide ? '20px' : '16px',
+      chips: ES.map(([k, label]) => ({ label, sel: s.estilo === k ? 'true' : 'false', bg: s.estilo === k ? '#F7E5C1' : 'transparent', border: s.estilo === k ? '#1C393F' : '#EAEAEA', weight: s.estilo === k ? 500 : 400, click: () => this.setEstilo(k) })),
+      plan: act.filter((d) => d.estilos && d.estilos.includes(s.estilo)).map((d) => card(d, 'p')),
+      carRef: this.carRef, dispL: s.canL ? 'flex' : 'none', dispR: s.canR ? 'flex' : 'none',
+      irIzq: () => this.scrollCar(-1), irDer: () => this.scrollCar(1),
+      onCarScroll: () => this.updateArrows(),
+      onCarKey: (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); this.scrollCar(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); this.scrollCar(-1); } }
+    };
+  }
+
+
+  scrollOf(dir) { const el = this.ofRef.current; if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: this.reduce ? 'auto' : 'smooth' }); }
+  ofVals(s) {
+    const { data } = Component.API;
+    const MES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const now = new Date(), vie = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((5 - now.getDay() + 7) % 7));
+    const dom = new Date(vie.getFullYear(), vie.getMonth(), vie.getDate() + 2, 23, 59, 59);
+    const f = (d) => d.getDate() + ' de ' + MES[d.getMonth()];
+    const ms = Math.max(0, dom - now), dd = Math.floor(ms / 864e5), hh = Math.floor((ms % 864e5) / 36e5);
+    const desc = { aloj_001: 20, aloj_002: 22, aloj_007: 25, aloj_009: 18, aloj_003: 15, aloj_005: 30 };
+    const ofertas = Object.keys(desc).map((id) => data.alojamientos.find((a) => a.id === id)).filter(Boolean).map((a) => {
+      const pct = desc[a.id], ahora = Math.round(a.precioPorNoche * (1 - pct / 100));
+      return {
+        ...a, foto: a.fotos[0] || '', sinFoto: !a.fotos[0], fondo: a.fotos[0] ? 'url(' + a.fotos[0] + ') center/cover' : 'none',
+        descTxt: '-' + pct + '%', antes: '$' + a.precioPorNoche * 2, ahora: '$' + ahora * 2,
+        heartFill: s.favs[a.id] ? '#1C393F' : 'none', pressed: s.favs[a.id] ? 'true' : 'false',
+        toggle: (e) => { e.stopPropagation(); this.setState((st) => ({ favs: { ...st.favs, [a.id]: !st.favs[a.id] } })); },
+        click: (e) => { const d = data.destinos.find((x) => x.nombre === a.destino); if (d) this.pickDest(d, e); }
+      };
+    });
+    return {
+      ofertas, ofRef: this.ofRef, ofFechas: f(vie) + ' - ' + f(new Date(vie.getFullYear(), vie.getMonth(), vie.getDate() + 2)),
+      ofQuedan: 'Terminan en ' + dd + ' d ' + hh + ' h.',
+      ofDispL: s.ofL ? 'flex' : 'none', ofDispR: s.ofR ? 'flex' : 'none',
+      ofIzq: () => this.scrollOf(-1), ofDer: () => this.scrollOf(1), onOfScroll: () => this.updateArrows(),
+      onOfKey: (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); this.scrollOf(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); this.scrollOf(-1); } }
+    };
+  }
+
+  goToListings(filtro) {
+    this.setState({ filtro });
+    const el = this.destRef.current;
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: this.reduce ? 'auto' : 'smooth' });
+  }
+
+  renderVals() {
+    const { data } = Component.API;
+    const s = this.state;
+    const f = s.filtro.trim().toLowerCase();
+    const all = data.alojamientos.filter((a) => a.estado === 'disponible');
+    const match = f ? all.filter((a) => (a.ciudad + ' ' + a.pais).toLowerCase().includes(f)) : [];
+    const list = match.length ? match : all;
+    const hoy = new Date().toISOString().slice(0, 10);
+    return {
+      wide: s.wide,
+      clipRef: this.clipRef, rootRef: this.rootRef, wrapRef: this.wrapRef, videoRef: this.videoRef, duskRef: this.duskRef,
+      headRef: this.headRef, panelRef: this.panelRef, navRef: this.navRef, destRef: this.destRef,
+      destino: s.destino, entrada: s.entrada, salida: s.salida, huespedes: s.huespedes,
+      hoy, minSalida: s.entrada || hoy,
+      ...this.uiVals(s),
+      ...this.modaVals(s),
+      ...this.ofVals(s),
+      alojamientos: list.map((a) => ({
+        ...a,
+        foto: a.fotos[0] || '',
+        fondo: a.fotos[0] ? 'url(' + a.fotos[0] + ') center/cover' : 'none',
+        sinFoto: !a.fotos[0],
+        precio: '$' + a.precioPorNoche,
+        zoom: s.hover === a.id ? 'scale(1.04)' : 'scale(1)',
+        heartFill: s.favs[a.id] ? '#1C393F' : 'none',
+        pressed: s.favs[a.id] ? 'true' : 'false',
+        enter: () => this.setState({ hover: a.id }),
+        leave: () => this.setState({ hover: null }),
+        toggle: (e) => { e.stopPropagation(); this.setState((st) => ({ favs: { ...st.favs, [a.id]: !st.favs[a.id] } })); }
+      })),
+      destinos: data.destinos.filter((d) => d.estado === 'activo').map((d) => ({
+        ...d,
+        cuenta: 'Desde $' + d.precioDesde,
+        pick: (e) => { e.preventDefault(); this.setState({ destino: d.nombre }); this.goToListings(d.nombre); }
+      })),
+      testimonios: data.testimonios.filter((t) => t.estado === 'publicado')
+    };
+  }
+}
+</script>
+</body>
+</html>

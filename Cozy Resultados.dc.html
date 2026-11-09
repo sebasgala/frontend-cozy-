@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy — Resultados de la búsqueda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#fff;color:#1C393F;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C393F;text-decoration:none}
+a:hover{color:#2A525A}
+input,button,select{font:inherit}
+@keyframes au-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<div style="font-family:Inter,system-ui,sans-serif;background:#fff;color:#1C393F;min-height:100vh">
+
+<nav aria-label="Principal" style="background:#fff;border-bottom:1px solid #EAEAEA">
+  <div style="max-width:1280px;margin:0 auto;height:64px;padding:0 clamp(20px,5vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="Cozy Landing.dc.html" aria-label="Cozy, ir al inicio" style="display:flex;align-items:center;height:64px;margin:0 -10px"><img src="assets/cozy-logo-cream.png" alt="Cozy" style="height:64px;width:auto;display:block;filter:brightness(0) saturate(100%) invert(21%) sepia(14%) saturate(900%) hue-rotate(143deg) brightness(92%)"></a>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="font-size:13px;font-weight:700;color:#4B6166">ES</span>
+      <a href="#" style="background:#1C393F;color:#fff;font-weight:500;font-size:14px;padding:10px 18px;border-radius:12px" style-hover="background:#2A525A;color:#fff">Ingresar</a>
+    </div>
+  </div>
+</nav>
+
+<main style="max-width:1280px;margin:0 auto;padding:20px clamp(20px,5vw,56px) 96px">
+
+  <form onSubmit="{{ onBuscar }}" aria-label="Modificar búsqueda" style="background:#fff;border:1px solid #EAEAEA;border-radius:20px;padding:12px;display:grid;grid-template-columns:{{ barCols }};gap:12px;box-shadow:0 8px 24px rgba(28,57,63,.08)">
+    <label style="display:flex;flex-direction:column;gap:2px;padding:8px 14px;border:1px solid #EAEAEA;border-radius:14px">
+      <span style="font-size:13px;font-weight:500">Destino</span>
+      <select value="{{ destinoId }}" onChange="{{ onDestino }}" style="border:0;background:transparent;color:#1C393F;font-size:15px;min-height:30px;outline:none;border-radius:6px" style-focus="box-shadow:0 0 0 2px #1C393F">
+        <sc-for list="{{ destinos }}" as="d" hint-placeholder-count="3"><option value="{{ d.id }}">{{ d.label }}</option></sc-for>
+      </select>
+    </label>
+    <label style="display:flex;flex-direction:column;gap:2px;padding:8px 14px;border:1px solid #EAEAEA;border-radius:14px">
+      <span style="font-size:13px;font-weight:500">Entrada</span>
+      <input type="date" value="{{ entrada }}" onChange="{{ onEntrada }}" style="border:0;background:transparent;color:#1C393F;font-size:15px;min-height:30px;outline:none;border-radius:6px" style-focus="box-shadow:0 0 0 2px #1C393F">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:2px;padding:8px 14px;border:1px solid #EAEAEA;border-radius:14px">
+      <span style="font-size:13px;font-weight:500">Salida</span>
+      <input type="date" value="{{ salida }}" min="{{ entrada }}" onChange="{{ onSalida }}" style="border:0;background:transparent;color:#1C393F;font-size:15px;min-height:30px;outline:none;border-radius:6px" style-focus="box-shadow:0 0 0 2px #1C393F">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:2px;padding:8px 14px;border:1px solid #EAEAEA;border-radius:14px">
+      <span style="font-size:13px;font-weight:500">Huéspedes</span>
+      <select value="{{ huespedes }}" onChange="{{ onHuespedes }}" style="border:0;background:transparent;color:#1C393F;font-size:15px;min-height:30px;outline:none;border-radius:6px" style-focus="box-shadow:0 0 0 2px #1C393F">
+        <sc-for list="{{ opcionesHuespedes }}" as="n" hint-placeholder-count="4"><option value="{{ n.v }}">{{ n.label }}</option></sc-for>
+      </select>
+    </label>
+    <button type="submit" style="min-height:56px;border:0;border-radius:14px;background:#1C393F;color:#fff;font-weight:500;font-size:15px;padding:0 28px;cursor:pointer" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px">Buscar</button>
+  </form>
+
+  <nav aria-label="Migas de pan" style="margin:20px 0 20px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;color:#4B6166;white-space:nowrap">
+    <a href="Cozy Landing.dc.html" style="text-decoration:underline;text-underline-offset:3px">Inicio</a><span aria-hidden="true">›</span>
+    <span>{{ pais }}</span><span aria-hidden="true">›</span>
+    <span>{{ destinoNombre }}</span><span aria-hidden="true">›</span>
+    <span style="color:#1C393F;font-weight:500" aria-current="page">Resultados de la búsqueda</span>
+  </nav>
+
+  <div style="display:grid;grid-template-columns:{{ layoutCols }};gap:24px;align-items:start">
+
+    <aside aria-label="Filtros" style="display:flex;flex-direction:column;gap:16px">
+      <div style="position:relative;height:140px;border-radius:20px;overflow:hidden;background:repeating-linear-gradient(0deg,#F7E5C1 0 23px,#EFD9AA 23px 24px),#F7E5C1;display:flex;align-items:center;justify-content:center">
+        <button type="button" onClick="{{ onMapa }}" style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:500;font-size:14px;cursor:pointer" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Ver en el mapa</button>
+        <sc-if value="{{ mapaMsg }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:12px;right:12px;bottom:8px;text-align:center;font-size:12px;color:#1C393F">El mapa estará disponible pronto.</span></sc-if>
+      </div>
+      <sc-if value="{{ mostrarToggleFiltros }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ toggleFiltros }}" aria-expanded="{{ filtrosAbiertos }}" style="min-height:48px;border:1px solid #1C393F;border-radius:12px;background:transparent;color:#1C393F;font-weight:500;font-size:15px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px">{{ toggleFiltrosTxt }}</button>
+      </sc-if>
+      <sc-if value="{{ verFiltros }}" hint-placeholder-val="{{ true }}">
+      <div style="border:1px solid #EAEAEA;border-radius:20px;background:#fff;overflow:hidden">
+        <div style="padding:16px 20px;font-weight:600;font-size:16px;border-bottom:1px solid #EAEAEA;display:flex;justify-content:space-between;align-items:center">Filtrar por
+          <sc-if value="{{ hayFiltros }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ limpiar }}" style="border:0;background:transparent;color:#1C393F;font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:32px">Borrar filtros</button></sc-if>
+        </div>
+        <fieldset style="margin:0;border:0;padding:16px 20px;border-bottom:1px solid #EAEAEA">
+          <legend style="padding:0;font-weight:600;font-size:15px;margin-bottom:12px">Tipo de alojamiento</legend>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="6">
+              <label style="display:flex;align-items:center;gap:12px;min-height:36px;cursor:pointer;font-size:14px"><input type="checkbox" checked="{{ t.on }}" onChange="{{ t.toggle }}" style="width:20px;height:20px;margin:0;accent-color:#1C393F;flex:none"><span style="flex:1">{{ t.nombre }}</span><span style="color:#4B6166;font-size:13px">{{ t.n }}</span></label>
+            </sc-for>
+          </div>
+        </fieldset>
+        <div style="padding:16px 20px 20px">
+          <div style="font-weight:600;font-size:15px;margin-bottom:4px">Tu presupuesto (por noche)</div>
+          <div style="font-size:14px;color:#4B6166;margin-bottom:12px">{{ rangoTxt }}</div>
+          <div aria-hidden="true" style="display:flex;align-items:flex-end;gap:2px;height:56px;margin-bottom:6px">
+            <sc-for list="{{ barras }}" as="b" hint-placeholder-count="12"><div style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:2px 2px 0 0;min-height:3px"></div></sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:2px;font-size:13px;color:#4B6166">Mínimo
+            <input type="range" min="0" max="{{ maxPrecio }}" step="5" value="{{ pmin }}" onInput="{{ onPmin }}" aria-label="Precio mínimo por noche" style="width:100%;accent-color:#1C393F;margin:0;height:28px">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:2px;font-size:13px;color:#4B6166">Máximo
+            <input type="range" min="0" max="{{ maxPrecio }}" step="5" value="{{ pmax }}" onInput="{{ onPmax }}" aria-label="Precio máximo por noche" style="width:100%;accent-color:#1C393F;margin:0;height:28px">
+          </label>
+        </div>
+      </div>
+      </sc-if>
+    </aside>
+
+    <section aria-label="Resultados" style="min-width:0">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">
+        <h1 style="margin:0;font-weight:600;font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em">{{ titulo }}</h1>
+        <div role="group" aria-label="Vista" style="display:flex;padding:3px;border:1px solid #EAEAEA;border-radius:999px;background:#fff">
+          <button type="button" aria-pressed="{{ esLista }}" onClick="{{ verLista }}" style="min-height:36px;padding:0 18px;border:0;border-radius:999px;background:{{ bgLista }};color:#1C393F;font-weight:500;font-size:14px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px">Lista</button>
+          <button type="button" aria-pressed="{{ esGrid }}" onClick="{{ verGrid }}" style="min-height:36px;padding:0 18px;border:0;border-radius:999px;background:{{ bgGrid }};color:#1C393F;font-weight:500;font-size:14px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px">Cuadrícula</button>
+        </div>
+      </div>
+      <label style="display:inline-flex;align-items:center;gap:8px;margin:16px 0 20px;min-height:44px;padding:0 14px;border:1px solid #EAEAEA;border-radius:12px;font-size:14px;font-weight:500;white-space:nowrap">Ordenar por:
+        <select value="{{ orden }}" onChange="{{ onOrden }}" style="border:0;background:transparent;color:#1C393F;font-weight:500;font-size:14px;outline:none;min-height:36px;border-radius:6px" style-focus="box-shadow:0 0 0 2px #1C393F">
+          <option value="destacados">Nuestros destacados</option>
+          <option value="precio-asc">Precio: menor a mayor</option>
+          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="puntuacion">Mejor puntuación</option>
+        </select>
+      </label>
+
+      <sc-if value="{{ sinResultados }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #EAEAEA;border-radius:20px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px">
+          <span style="font-weight:600;font-size:18px">Ningún alojamiento coincide con tus filtros.</span>
+          <button type="button" onClick="{{ limpiar }}" style="min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:500;cursor:pointer" style-hover="background:#2A525A">Borrar filtros</button>
+        </div>
+      </sc-if>
+
+      <div style="display:grid;grid-template-columns:{{ listaCols }};gap:16px">
+        <sc-for list="{{ items }}" as="a" hint-placeholder-count="3">
+          <article style="display:flex;flex-direction:{{ cardDir }};background:#fff;border:1px solid #EAEAEA;border-radius:20px;overflow:hidden;animation:au-rise 320ms cubic-bezier(.16,1,.3,1) both;transition:border-color 200ms,box-shadow 200ms" style-hover="border-color:#1C393F">
+            <div style="position:relative;flex:none;width:{{ photoW }};min-height:{{ photoH }};background:linear-gradient(135deg,#1C393F,#B7A85C);margin:{{ photoM }};border-radius:{{ photoR }};overflow:hidden">
+              <span style="position:absolute;left:14px;bottom:12px;font-size:12px;color:#F7E5C1">Foto pendiente</span>
+              <button type="button" onClick="{{ a.toggle }}" aria-label="Guardar en favoritos" aria-pressed="{{ a.pressed }}" style="position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ a.heartFill }}" stroke="#1C393F" stroke-width="1.5" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></button>
+            </div>
+            <div style="flex:1;min-width:0;padding:16px 20px;display:flex;flex-direction:{{ bodyDir }};gap:16px">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                <span style="align-self:flex-start;background:#F4F4F4;color:#1C393F;font-size:12px;font-weight:500;padding:4px 8px;border-radius:6px">{{ a.tipo }}</span>
+                <h2 style="margin:0;font-weight:600;font-size:20px;letter-spacing:-.01em;line-height:1.25"><a href="#" onClick="{{ a.abrir }}" style="color:#1C393F;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color 200ms" style-hover="text-decoration-color:#1C393F" style-focus="outline:2px solid #1C393F;outline-offset:2px">{{ a.nombre }}</a></h2>
+                <div style="font-size:14px;color:#4B6166">{{ a.zona }}, {{ destinoNombre }} · a {{ a.distTxt }} del centro</div>
+                <div style="margin-top:6px;padding-top:10px;border-top:1px solid #EAEAEA;display:flex;flex-direction:column;gap:4px;font-size:14px">
+                  <span style="font-weight:600">{{ a.hab }}</span>
+                  <span style="color:#4B6166">{{ a.cama }}</span>
+                  <sc-if value="{{ a.desayuno }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-weight:500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>Desayuno incluido</span></sc-if>
+                  <sc-if value="{{ a.quedan }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;background:#F7E5C1;color:#1C393F;font-weight:500;font-size:13px;padding:4px 10px;border-radius:8px">{{ a.quedanTxt }}</span></sc-if>
+                </div>
+              </div>
+              <div style="flex:none;width:{{ rightW }};display:flex;flex-direction:column;gap:12px;justify-content:space-between;text-align:{{ rightAlign }}">
+                <div style="display:flex;align-items:center;gap:10px;justify-content:{{ scoreJustify }}">
+                  <div style="display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:600;font-size:15px">{{ a.etiqueta }}</span><span style="font-size:13px;color:#4B6166">{{ a.comentTxt }}</span></div>
+                  <span style="min-width:40px;height:40px;border-radius:10px 10px 10px 2px;background:#1C393F;color:#F7E5C1;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">{{ a.puntTxt }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px;align-items:{{ priceAlign }}">
+                  <span style="font-size:13px;color:#4B6166">{{ nochesTxt }}, {{ huespedesTxt }}</span>
+                  <span style="display:flex;align-items:baseline;gap:8px"><sc-if value="{{ a.antes }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:#4B6166;text-decoration:line-through">{{ a.antesTxt }}</span></sc-if><span style="font-weight:700;font-size:26px;letter-spacing:-.02em">{{ a.totalTxt }}</span></span>
+                  <span style="font-size:13px;color:#4B6166">+ {{ a.impTxt }} en impuestos y cargos</span>
+                </div>
+                <a href="#" onClick="{{ a.abrir }}" style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border-radius:12px;background:#1C393F;color:#fff;font-weight:500;font-size:14px" style-hover="background:#2A525A;color:#fff" style-focus="outline:2px solid #1C393F;outline-offset:3px">Ver disponibilidad<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hayMas }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:28px">
+          <span style="font-size:14px;color:#4B6166">{{ mostrandoTxt }}</span>
+          <button type="button" onClick="{{ cargarMas }}" style="min-height:48px;padding:0 28px;border:1px solid #1C393F;border-radius:12px;background:transparent;color:#1C393F;font-weight:500;font-size:15px;cursor:pointer" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Cargar más resultados</button>
+        </div>
+      </sc-if>
+    </section>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static DESTS = [
+    { id: 'dest_001', nombre: 'Cartagena', pais: 'Colombia', desde: 95 },
+    { id: 'dest_002', nombre: 'Bariloche', pais: 'Argentina', desde: 80 },
+    { id: 'dest_003', nombre: 'Oaxaca', pais: 'México', desde: 70 },
+    { id: 'dest_004', nombre: 'Valle de Elqui', pais: 'Chile', desde: 110 },
+    { id: 'dest_005', nombre: 'Mérida', pais: 'México', desde: 65 },
+    { id: 'dest_006', nombre: 'Punta del Este', pais: 'Uruguay', desde: 120 },
+    { id: 'dest_007', nombre: 'Cusco', pais: 'Perú', desde: 45 },
+    { id: 'dest_008', nombre: 'San Andrés', pais: 'Colombia', desde: 130 },
+    { id: 'dest_009', nombre: 'Valle de Bravo', pais: 'México', desde: 90 },
+    { id: 'dest_010', nombre: 'Puerto Varas', pais: 'Chile', desde: 100 }
+  ];
+  static TIPOS = ['Hotel', 'Hostal o pensión', 'Apartahotel', 'Casa o chalet', 'Cabaña', 'Apartamento', 'Villa', 'Bed and breakfast'];
+  static HAB = ['Habitación doble estándar', 'Habitación doble superior', 'Suite con vista', 'Habitación familiar', 'Estudio con cocina', 'Habitación doble pequeña'];
+  static CAMA = ['1 cama doble', '2 camas individuales', '1 cama king', '1 cama individual'];
+  static ZONAS = { dest_001: ['Centro Histórico', 'Getsemaní', 'Bocagrande', 'Manga', 'Castillogrande'] };
+
+  static build() {
+    const A = ['Casa', 'Posada', 'Refugio', 'Mirador', 'Hacienda', 'Rincón', 'Vista', 'Nido'];
+    const B = ['Alba', 'Cielo', 'Luna', 'Sol', 'Brisa', 'Ámbar', 'Encanto', 'Aurora'];
+    const out = {};
+    Component.DESTS.forEach((d, di) => {
+      let seed = 7 + di * 31;
+      const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+      const zonas = Component.ZONAS[d.id] || ['Centro', 'Zona turística', 'Alrededores'];
+      out[d.id] = Array.from({ length: di === 0 ? 12 : 5 }, (_, i) => {
+        const noche = Math.round(d.desde * (0.6 + rnd() * 1.6) / 5) * 5;
+        return {
+          id: d.id + '_' + i, nombre: A[(i + di) % 8] + ' ' + B[(i * 3 + di + Math.floor(i / 8)) % 8],
+          tipo: Component.TIPOS[(Math.floor(rnd() * 8) + i) % 8], zona: zonas[Math.floor(rnd() * zonas.length)],
+          dist: [150, 300, 450, 800, 1200, 2000][Math.floor(rnd() * 6)],
+          hab: Component.HAB[Math.floor(rnd() * 6)], cama: Component.CAMA[Math.floor(rnd() * 4)],
+          desayuno: rnd() > 0.45, quedan: rnd() > 0.6 ? 1 + Math.floor(rnd() * 3) : 0,
+          noche, antes: rnd() > 0.65 ? Math.round(noche * 1.25 / 5) * 5 : 0,
+          punt: Math.round((7.4 + rnd() * 2) * 10) / 10, coment: 80 + Math.floor(rnd() * 900)
+        };
+      });
+    });
+    return out;
+  }
+
+  iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+  state = (() => {
+    const q = new URLSearchParams(location.search || (location.hash.indexOf('?') > -1 ? location.hash.slice(location.hash.indexOf('?')) : ''));
+    const now = new Date(), vie = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((5 - now.getDay() + 7) % 7));
+    const dom = new Date(vie.getFullYear(), vie.getMonth(), vie.getDate() + 2);
+    const id = q.get('destino');
+    const ok = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+    const ent = ok(q.get('entrada')) ? q.get('entrada') : this.iso(vie);
+    let sal = ok(q.get('salida')) ? q.get('salida') : this.iso(dom);
+    if (sal <= ent) sal = this.iso(new Date(new Date(ent + 'T00:00').getTime() + 864e5));
+    return {
+      destinoId: Component.DESTS.some((d) => d.id === id) ? id : 'dest_001', entrada: ent, salida: sal,
+      huespedes: Math.min(16, Math.max(1, parseInt(q.get('huespedes') || '2', 10) || 2)),
+      tipos: {}, pmin: null, pmax: null, orden: 'destacados', vista: 'lista', visibles: 6, favs: {},
+      wide: window.innerWidth >= 900, filtrosAbiertos: false, mapaMsg: false
+    };
+  })();
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth >= 900, w: window.innerWidth });
+    window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); }
+
+  data() { return Component.__data || (Component.__data = Component.build()); }
+  money(n) { return '$' + Math.round(n).toLocaleString('es'); }
+
+  renderVals() {
+    const s = this.state, dests = Component.DESTS, dest = dests.find((d) => d.id === s.destinoId);
+    const base = this.data()[s.destinoId];
+    const noches = Math.max(1, Math.round((new Date(s.salida + 'T00:00') - new Date(s.entrada + 'T00:00')) / 864e5));
+    const maxPrecio = Math.ceil(Math.max(...base.map((a) => a.noche)) / 50) * 50;
+    const pmin = s.pmin == null ? 0 : Math.min(s.pmin, maxPrecio), pmax = s.pmax == null ? maxPrecio : Math.min(s.pmax, maxPrecio);
+    const act = Object.keys(s.tipos).filter((k) => s.tipos[k]);
+    const hayFiltros = act.length > 0 || pmin > 0 || pmax < maxPrecio;
+    let list = base.filter((a) => (!act.length || act.includes(a.tipo)) && a.noche >= pmin && a.noche <= pmax);
+    if (s.orden === 'precio-asc') list = list.slice().sort((a, b) => a.noche - b.noche);
+    else if (s.orden === 'precio-desc') list = list.slice().sort((a, b) => b.noche - a.noche);
+    else if (s.orden === 'puntuacion') list = list.slice().sort((a, b) => b.punt - a.punt);
+    const shown = list.slice(0, s.visibles);
+    const lista = s.vista === 'lista', row = lista && window.innerWidth >= 1180;
+    const lab = (p) => p >= 9 ? 'Excelente' : p >= 8.5 ? 'Fantástico' : p >= 8 ? 'Muy bueno' : 'Bueno';
+    const bins = 12, step = maxPrecio / bins, hist = Array(bins).fill(0);
+    base.forEach((a) => { hist[Math.min(bins - 1, Math.floor(a.noche / step))]++; });
+    const hm = Math.max(...hist);
+    const tiposVals = Component.TIPOS.map((t) => ({ nombre: t, n: base.filter((a) => a.tipo === t).length })).filter((t) => t.n).map((t) => ({
+      ...t, on: !!s.tipos[t.nombre],
+      toggle: () => this.setState((st) => ({ tipos: { ...st.tipos, [t.nombre]: !st.tipos[t.nombre] }, visibles: 6 }))
+    }));
+    const reset = { tipos: {}, pmin: null, pmax: null, visibles: 6 };
+    const grid = !lista;
+    return {
+      barCols: s.wide ? 'minmax(220px,1.6fr) repeat(3,minmax(0,1fr)) auto' : 'repeat(auto-fit,minmax(170px,1fr))',
+      destinoId: s.destinoId, entrada: s.entrada, salida: s.salida, huespedes: s.huespedes,
+      destinos: dests.map((d) => ({ id: d.id, label: d.nombre + ', ' + d.pais })),
+      opcionesHuespedes: Array.from({ length: 16 }, (_, i) => ({ v: i + 1, label: (i + 1) + (i ? ' huéspedes' : ' huésped') })),
+      onDestino: (e) => this.setState({ destinoId: e.target.value, ...reset }),
+      onEntrada: (e) => { const v = e.target.value; this.setState((st) => ({ entrada: v, salida: st.salida <= v ? this.iso(new Date(new Date(v + 'T00:00').getTime() + 864e5)) : st.salida })); },
+      onSalida: (e) => this.setState({ salida: e.target.value }),
+      onHuespedes: (e) => this.setState({ huespedes: parseInt(e.target.value, 10) }),
+      onBuscar: (e) => {
+        e.preventDefault();
+        this.setState({ visibles: 6 });
+        try { history.replaceState(null, '', '?destino=' + s.destinoId + '&entrada=' + s.entrada + '&salida=' + s.salida + '&huespedes=' + s.huespedes); } catch (err) {}
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      pais: dest.pais, destinoNombre: dest.nombre,
+      layoutCols: s.wide ? '280px minmax(0,1fr)' : 'minmax(0,1fr)',
+      onMapa: () => this.setState({ mapaMsg: true }), mapaMsg: s.mapaMsg,
+      mostrarToggleFiltros: !s.wide, verFiltros: s.wide || s.filtrosAbiertos, filtrosAbiertos: s.filtrosAbiertos ? 'true' : 'false',
+      toggleFiltros: () => this.setState((st) => ({ filtrosAbiertos: !st.filtrosAbiertos })),
+      toggleFiltrosTxt: s.filtrosAbiertos ? 'Ocultar filtros' : 'Filtrar' + (hayFiltros ? ' (activos)' : ''),
+      hayFiltros, limpiar: () => this.setState(reset), tipos: tiposVals,
+      rangoTxt: '$' + pmin + ' - $' + pmax + (pmax >= maxPrecio ? '+' : ''), maxPrecio, pmin, pmax,
+      barras: hist.map((n, i) => ({ h: Math.round(n / hm * 100) + '%', c: (i + 1) * step > pmin && i * step < pmax ? '#1C393F' : '#EAEAEA' })),
+      onPmin: (e) => { const v = Math.min(parseInt(e.target.value, 10), pmax); this.setState({ pmin: v, visibles: 6 }); },
+      onPmax: (e) => { const v = Math.max(parseInt(e.target.value, 10), pmin); this.setState({ pmax: v, visibles: 6 }); },
+      titulo: dest.nombre + ': ' + list.length + (list.length === 1 ? ' alojamiento encontrado' : ' alojamientos encontrados'),
+      esLista: lista ? 'true' : 'false', esGrid: grid ? 'true' : 'false', bgLista: lista ? '#F7E5C1' : 'transparent', bgGrid: grid ? '#F7E5C1' : 'transparent',
+      verLista: () => this.setState({ vista: 'lista' }), verGrid: () => this.setState({ vista: 'grid' }),
+      orden: s.orden, onOrden: (e) => this.setState({ orden: e.target.value, visibles: 6 }),
+      sinResultados: list.length === 0,
+      listaCols: lista ? 'minmax(0,1fr)' : 'repeat(auto-fill,minmax(min(100%,280px),1fr))',
+      cardDir: row ? 'row' : 'column', bodyDir: row ? 'row' : 'column',
+      photoW: row ? '260px' : 'auto', photoH: row ? '220px' : '180px', photoM: row ? '12px' : '0', photoR: row ? '14px' : '0',
+      rightW: row ? '230px' : 'auto', rightAlign: row ? 'right' : 'left', scoreJustify: row ? 'flex-end' : 'flex-start', priceAlign: row ? 'flex-end' : 'flex-start',
+      nochesTxt: noches + (noches === 1 ? ' noche' : ' noches'), huespedesTxt: s.huespedes + (s.huespedes === 1 ? ' huésped' : ' huéspedes'),
+      items: shown.map((a) => {
+        const total = a.noche * noches, antes = a.antes * noches;
+        return {
+          ...a, distTxt: a.dist >= 1000 ? (a.dist / 1000).toString().replace('.', ',') + ' km' : a.dist + ' m',
+          etiqueta: lab(a.punt), puntTxt: a.punt.toFixed(1).replace('.', ','), comentTxt: a.coment + ' comentarios',
+          quedanTxt: a.quedan === 1 ? 'Nos queda 1 a este precio' : 'Nos quedan ' + a.quedan + ' a este precio',
+          totalTxt: this.money(total), antesTxt: this.money(antes), impTxt: this.money(total * 0.12),
+          heartFill: s.favs[a.id] ? '#1C393F' : 'none', pressed: s.favs[a.id] ? 'true' : 'false',
+          toggle: () => this.setState((st) => ({ favs: { ...st.favs, [a.id]: !st.favs[a.id] } })),
+          abrir: (e) => { e.preventDefault(); location.href = 'Cozy Detalle.dc.html?id=' + a.id + '&entrada=' + s.entrada + '&salida=' + s.salida + '&huespedes=' + s.huespedes; }
+        };
+      }),
+      hayMas: list.length > s.visibles, mostrandoTxt: 'Mostrando ' + Math.min(s.visibles, list.length) + ' de ' + list.length,
+      cargarMas: () => this.setState((st) => ({ visibles: st.visibles + 6 }))
+    };
+  }
+}
+</script>
+</body>
+</html>

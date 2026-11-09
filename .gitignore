@@ -1,0 +1,18 @@
+node_modules
+dist
+build
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode
+.idea
+
+# Capturas de revisión de Impeccable
+.impeccable/review/
+e2e/capturas/
+
+# Material de diseño y archivos subidos: quedan en el monolito, no en este repo
+/docs/
+/uploads/

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy — Registro de administradores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#fff;color:#1C393F;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1C393F;text-decoration:none}
+a:hover{color:#2A525A}
+input,button{font:inherit}
+input::placeholder{color:#8A9A9D}
+@keyframes ra-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ra-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<div style="font-family:Inter,system-ui,sans-serif;background:#fff;color:#1C393F;min-height:100vh;display:flex;flex-direction:column">
+<nav aria-label="Principal" style="border-bottom:1px solid #EAEAEA">
+  <div style="max-width:1280px;margin:0 auto;height:64px;padding:0 clamp(20px,5vw,56px);display:flex;align-items:center;justify-content:space-between">
+    <a href="Cozy Landing.dc.html" aria-label="Cozy, ir al inicio" style="display:flex;align-items:center;height:64px;margin:0 -10px"><img src="assets/cozy-logo-cream.png" alt="Cozy" style="height:64px;width:auto;display:block;filter:brightness(0) saturate(100%) invert(21%) sepia(14%) saturate(900%) hue-rotate(143deg) brightness(92%)"></a>
+    <span style="font-size:14px;color:#4B6166">Para anfitriones</span>
+  </div>
+</nav>
+
+<main style="flex:1;width:100%;max-width:480px;margin:0 auto;padding:40px 20px 72px;display:flex;flex-direction:column;gap:20px;animation:ra-rise 300ms cubic-bezier(.16,1,.3,1) both">
+
+  <sc-if value="{{ esForm }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:6px"><h1 style="margin:0;font-weight:600;font-size:clamp(28px,5vw,36px);letter-spacing:-.03em;line-height:1.1">{{ titulo }}</h1><p style="margin:0;font-size:15px;color:#4B6166;line-height:1.5">{{ sub }}</p></div>
+    <div role="tablist" aria-label="Acceso" style="display:grid;grid-template-columns:1fr 1fr;padding:4px;border:1px solid #EAEAEA;border-radius:12px"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.click }}" style="min-height:44px;border:0;border-radius:9px;background:{{ t.bg }};color:{{ t.fg }};font-weight:600;font-size:15px;cursor:pointer" style-focus="outline:2px solid #1C393F;outline-offset:2px">{{ t.l }}</button></sc-for></div>
+    <sc-if value="{{ esReg }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:12px;align-items:flex-start;background:#F7E5C1;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2M9 2h6"></path></svg><span><strong>Tu cuenta quedará pendiente de aprobación.</strong> Un superadministrador revisará tu solicitud antes de que puedas ingresar.</span></div></sc-if>
+    <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;align-items:center;gap:10px;border:1px solid #1C393F;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg>{{ err }}</div></sc-if>
+    <form ref="{{ formRef }}" noValidate="{{ true }}" onSubmit="{{ onSubmit }}" style="display:flex;flex-direction:column;gap:18px">
+      <sc-for list="{{ campos }}" as="f" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:6px"><label for="{{ f.id }}" style="font-size:14px;font-weight:500">{{ f.label }}</label>
+          <input id="{{ f.id }}" data-fld="{{ f.k }}" type="{{ f.type }}" autoComplete="{{ f.ac }}" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.onChange }}" onBlur="{{ f.onBlur }}" aria-invalid="{{ f.inv }}" aria-describedby="{{ f.desc }}" style="width:100%;min-height:48px;padding:0 14px;border:{{ f.border }};border-radius:12px;background:#fff;color:#1C393F;font-size:16px;outline:none" style-focus="box-shadow:0 0 0 2px #1C393F;border-color:#1C393F">
+          <sc-if value="{{ f.err }}" hint-placeholder-val="{{ false }}"><span id="{{ f.errId }}" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg>{{ f.err }}</span></sc-if>
+          <sc-if value="{{ f.help }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#4B6166">{{ f.help }}</span></sc-if></div>
+      </sc-for>
+      <button type="submit" disabled="{{ cargando }}" style="min-height:52px;border:0;border-radius:12px;background:#1C393F;color:#fff;font-weight:600;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#2A525A" style-focus="outline:2px solid #1C393F;outline-offset:3px"><sc-if value="{{ cargando }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="animation:ra-spin 800ms linear infinite"><path d="M12 3a9 9 0 1 1-9 9"></path></svg></sc-if>{{ btn }}</button>
+    </form>
+    <p style="margin:0;font-size:13px;color:#4B6166;line-height:1.5">Para probar el ingreso: andres.salazar@cozy.co (pendiente), valentina.cruz@cozy.co (suspendida), ana.torres@cozy.co (activa).</p>
+  </sc-if>
+
+  <sc-if value="{{ esEnviada }}" hint-placeholder-val="{{ false }}">
+    <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#1C393F;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+    <h1 tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,5vw,36px);letter-spacing:-.03em;line-height:1.1;outline:none">Recibimos tu solicitud</h1>
+    <p style="margin:0;font-size:16px;line-height:1.55;color:#4B6166">Tu cuenta <strong style="color:#1C393F">{{ correoOk }}</strong> quedó <strong style="color:#1C393F">pendiente de aprobación</strong>. No puedes ingresar hasta que un superadministrador la apruebe.</p>
+    <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px"><sc-for list="{{ pasos }}" as="p" hint-placeholder-count="3"><li style="display:flex;gap:14px;align-items:flex-start;font-size:15px;line-height:1.5"><span aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:1px solid #1C393F;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">{{ p.n }}</span><span>{{ p.t }}</span></li></sc-for></ol>
+    <a href="Cozy Landing.dc.html" style="min-height:52px;border-radius:12px;border:1px solid #1C393F;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Volver al inicio</a>
+  </sc-if>
+
+  <sc-if value="{{ esPendiente }}" hint-placeholder-val="{{ false }}">
+    <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#F7E5C1;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2M9 2h6"></path></svg></span>
+    <h1 tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,5vw,36px);letter-spacing:-.03em;line-height:1.1;outline:none">Tu cuenta está pendiente de aprobación</h1>
+    <p style="margin:0;font-size:16px;line-height:1.55;color:#4B6166">Aún no puedes ingresar al panel. Te avisaremos al correo <strong style="color:#1C393F">{{ correoOk }}</strong> cuando un superadministrador revise tu solicitud.</p>
+    <button type="button" onClick="{{ volver }}" style="min-height:52px;border:1px solid #1C393F;border-radius:12px;background:#fff;color:#1C393F;font-weight:600;font-size:16px;cursor:pointer" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Volver</button>
+  </sc-if>
+
+  <sc-if value="{{ esSusp }}" hint-placeholder-val="{{ false }}">
+    <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#EAEAEA;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1C393F" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M5.6 5.6l12.8 12.8"></path></svg></span>
+    <h1 tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,5vw,36px);letter-spacing:-.03em;line-height:1.1;outline:none">Tu cuenta está suspendida</h1>
+    <p style="margin:0;font-size:16px;line-height:1.55;color:#4B6166">No puedes ingresar por ahora. Escríbenos a soporte@cozy.co y revisaremos tu caso.</p>
+    <button type="button" onClick="{{ volver }}" style="min-height:52px;border:1px solid #1C393F;border-radius:12px;background:#fff;color:#1C393F;font-weight:600;font-size:16px;cursor:pointer" style-hover="background:#F7E5C1" style-focus="outline:2px solid #1C393F;outline-offset:3px">Volver</button>
+  </sc-if>
+
+  <sc-if value="{{ esOk }}" hint-placeholder-val="{{ false }}">
+    <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#1C393F;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+    <h1 tabindex="-1" style="margin:0;font-weight:600;font-size:clamp(28px,5vw,36px);letter-spacing:-.03em;line-height:1.1;outline:none">Ingreso correcto</h1>
+    <a href="Cozy Admin.dc.html#admin" style="min-height:52px;border-radius:12px;background:#1C393F;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px" style-hover="background:#2A525A;color:#fff" style-focus="outline:2px solid #1C393F;outline-offset:3px">Ir al panel</a>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { vista: 'form', tab: 'reg', R: { nombre: '', correo: '', telefono: '', clave: '' }, L: { correo: '', clave: '' }, touched: {}, sub: false, err: '', cargando: false, correoOk: '' };
+  formRef = React.createRef();
+  load(k) { try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  componentDidMount() { this.onHash = () => { if (location.hash === '#ingresar') this.setState({ tab: 'in', vista: 'form' }); }; window.addEventListener('hashchange', this.onHash); this.onHash(); }
+  componentWillUnmount() { window.removeEventListener('hashchange', this.onHash); clearTimeout(this.t); }
+  errs() {
+    const s = this.state, e = {}, mail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+    if (s.tab === 'reg') { const F = s.R; if (!F.nombre.trim()) e.nombre = 'Escribe tu nombre completo'; if (!F.correo.trim()) e.correo = 'Escribe tu correo'; else if (!mail(F.correo)) e.correo = 'Revisa el correo: debe verse como nombre@correo.com'; if (F.telefono.trim() && F.telefono.replace(/\D/g, '').length < 7) e.telefono = 'Revisa el teléfono: faltan dígitos'; if (!F.clave) e.clave = 'Crea una contraseña'; else if (F.clave.length < 8) e.clave = 'Usa al menos 8 caracteres'; }
+    else { const F = s.L; if (!F.correo.trim()) e.correo = 'Escribe tu correo'; else if (!mail(F.correo)) e.correo = 'Revisa el correo: debe verse como nombre@correo.com'; if (!F.clave) e.clave = 'Escribe tu contraseña'; }
+    return e;
+  }
+  estadoDe(correo) {
+    const c = correo.trim().toLowerCase(), all = this.load('cozy:sys:usuarios').concat(this.load('cozy:sys:solicitudes')), u = all.find((x) => x.correo.toLowerCase() === c);
+    if (u) return u.estado || (u.activo ? 'activo' : 'suspendido');
+    return { 'andres.salazar@cozy.co': 'pendiente', 'valentina.cruz@cozy.co': 'suspendido', 'ana.torres@cozy.co': 'activo' }[c] || null;
+  }
+  submit(ev) {
+    ev.preventDefault(); const s = this.state, er = this.errs(), keys = Object.keys(er);
+    if (keys.length) { this.setState({ sub: true }, () => { const el = this.formRef.current && this.formRef.current.querySelector('[data-fld="' + keys[0] + '"]'); if (el) el.focus(); }); return; }
+    this.setState({ cargando: true, err: '' });
+    this.t = setTimeout(() => {
+      if (s.tab === 'reg') {
+        const F = s.R, ex = this.estadoDe(F.correo);
+        if (ex) { this.setState({ cargando: false, err: 'Ya existe una cuenta con ese correo. Prueba ingresar.' }); return; }
+        const sol = this.load('cozy:sys:solicitudes'); sol.push({ id: 'u' + Date.now().toString(36), nombre: F.nombre.trim(), correo: F.correo.trim(), telefono: F.telefono, rol: 'propietario', activo: false, estado: 'pendiente', ultimoAcceso: 0, creadoEn: Date.now(), forzarCambioClave: false });
+        try { localStorage.setItem('cozy:sys:solicitudes', JSON.stringify(sol)); } catch (e) {}
+        this.setState({ cargando: false, vista: 'enviada', correoOk: F.correo.trim() }); this.top('h1');
+      } else {
+        const F = s.L, est = this.estadoDe(F.correo);
+        if (!est || F.clave === 'error') { this.setState({ cargando: false, err: 'El correo o la contraseña no coinciden. Inténtalo de nuevo.' }); return; }
+        this.setState({ cargando: false, vista: est === 'activo' ? 'ok' : est === 'pendiente' ? 'pendiente' : 'susp', correoOk: F.correo.trim() }); this.top('h1');
+      }
+    }, 800);
+  }
+  top(sel) { try { window.scrollTo(0, 0); } catch (e) {} setTimeout(() => { const el = document.querySelector(sel); if (el) el.focus(); }, 60); }
+  renderVals() {
+    const s = this.state, reg = s.tab === 'reg', er = this.errs();
+    const mk = (k, label, o) => { const src = reg ? s.R : s.L, key = reg ? 'R' : 'L', show = (s.touched[key + k] || s.sub) && er[k]; return { k, id: 'f-' + key + k, label, type: o.type || 'text', ac: o.ac || 'off', ph: o.ph || '', value: src[k], err: show ? er[k] : '', errId: 'e-' + k, help: show ? '' : (o.help || ''), desc: show ? 'e-' + k : undefined, inv: show ? 'true' : 'false', border: show ? '1px solid #1C393F' : '1px solid #EAEAEA',
+      onChange: (e) => { const v = e.target.value; this.setState((x) => ({ [key]: { ...x[key], [k]: v }, err: '' })); }, onBlur: () => this.setState((x) => ({ touched: { ...x.touched, [key + k]: true } })) }; };
+    const campos = reg ? [mk('nombre', 'Nombre completo', { ac: 'name' }), mk('correo', 'Correo', { type: 'email', ac: 'email', ph: 'nombre@correo.com' }), mk('telefono', 'Teléfono (opcional)', { type: 'tel', ac: 'tel', ph: '+593 99 123 4567' }), mk('clave', 'Contraseña', { type: 'password', ac: 'new-password', help: 'Al menos 8 caracteres.' })] : [mk('correo', 'Correo', { type: 'email', ac: 'email', ph: 'nombre@correo.com' }), mk('clave', 'Contraseña', { type: 'password', ac: 'current-password' })];
+    return {
+      esForm: s.vista === 'form', esEnviada: s.vista === 'enviada', esPendiente: s.vista === 'pendiente', esSusp: s.vista === 'susp', esOk: s.vista === 'ok', esReg: reg, correoOk: s.correoOk,
+      titulo: reg ? 'Registra tu alojamiento en Cozy' : 'Ingresa al panel', sub: reg ? 'Crea tu cuenta de administrador para publicar y gestionar tus alojamientos.' : 'Para administradores de alojamientos.',
+      tabs: [['reg', 'Registrarme'], ['in', 'Ingresar']].map(([k, l]) => ({ l, sel: s.tab === k ? 'true' : 'false', bg: s.tab === k ? '#1C393F' : 'transparent', fg: s.tab === k ? '#fff' : '#1C393F', click: () => this.setState({ tab: k, touched: {}, sub: false, err: '' }) })),
+      campos, formRef: this.formRef, onSubmit: (e) => this.submit(e), cargando: s.cargando, err: s.err, btn: s.cargando ? (reg ? 'Enviando solicitud…' : 'Ingresando…') : (reg ? 'Enviar solicitud' : 'Ingresar'),
+      pasos: [{ n: '1', t: 'Un superadministrador revisa tu solicitud.' }, { n: '2', t: 'Te avisamos por correo cuando esté aprobada.' }, { n: '3', t: 'Ingresas al panel y creas tu primer alojamiento.' }],
+      volver: () => this.setState({ vista: 'form', tab: 'in', touched: {}, sub: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

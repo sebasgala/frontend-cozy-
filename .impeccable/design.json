@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T14:28:52.940Z",
+  "title": "Design System: Cozy",
+  "extensions": {
+    "colorMeta": {
+      "gunmetal": {
+        "role": "primary",
+        "displayName": "Gunmetal",
+        "canonical": "oklch(32.5% 0.036 212.6)",
+        "tonalRamp": [
+          "#000F14",
+          "#0C2A2F",
+          "#2A474D",
+          "#49676D",
+          "#6A888F",
+          "#8CACB3",
+          "#AFD0D7",
+          "#E1F2F6"
+        ]
+      },
+      "gunmetal-hover": {
+        "role": "primary",
+        "displayName": "Gunmetal hover",
+        "canonical": "oklch(41.3% 0.047 212.1)",
+        "tonalRamp": [
+          "#000F16",
+          "#002B32",
+          "#204951",
+          "#406971",
+          "#618A93",
+          "#83ADB6",
+          "#A7D2DB",
+          "#DEF3F8"
+        ]
+      },
+      "ecru": {
+        "role": "secondary",
+        "displayName": "Ecru",
+        "canonical": "oklch(72.8% 0.099 98.4)",
+        "tonalRamp": [
+          "#160700",
+          "#322300",
+          "#504100",
+          "#706109",
+          "#928336",
+          "#B5A65A",
+          "#DACA7E",
+          "#F7F0CA"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "Blanco",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Gris claro",
+        "canonical": "oklch(96.7% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Negro neutro",
+        "canonical": "oklch(17.8% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Texto secundario",
+        "canonical": "oklch(47.7% 0.028 213.1)",
+        "tonalRamp": [
+          "#000E12",
+          "#14292D",
+          "#31464B",
+          "#4F666B",
+          "#70878C",
+          "#92AAAF",
+          "#B6CED4",
+          "#E5F1F4"
+        ]
+      },
+      "line-cream": {
+        "role": "neutral",
+        "displayName": "Crema de línea",
+        "canonical": "oklch(87.7% 0.055 87.2)",
+        "tonalRamp": [
+          "#150800",
+          "#302300",
+          "#4E401D",
+          "#6F5F3C",
+          "#90815C",
+          "#B4A37E",
+          "#D8C8A1",
+          "#F6EEDA"
+        ]
+      },
+      "dutch-white": {
+        "role": "neutral",
+        "displayName": "Dutch White",
+        "canonical": "oklch(92.7% 0.051 84.5)",
+        "tonalRamp": [
+          "#150800",
+          "#302303",
+          "#4F4021",
+          "#6F5F3F",
+          "#91805F",
+          "#B4A381",
+          "#D9C7A4",
+          "#F6EEDC"
+        ]
+      },
+      "success": {
+        "role": "status",
+        "displayName": "Éxito",
+        "canonical": "oklch(58.3% 0.112 152.8)",
+        "tonalRamp": [
+          "#001500",
+          "#003303",
+          "#005222",
+          "#1F7341",
+          "#469661",
+          "#6AB983",
+          "#8EDFA6",
+          "#D3FADD"
+        ]
+      },
+      "error": {
+        "role": "status",
+        "displayName": "Error",
+        "canonical": "oklch(52.0% 0.161 29.2)",
+        "tonalRamp": [
+          "#370000",
+          "#5D0000",
+          "#830000",
+          "#AA2F24",
+          "#D15446",
+          "#F97868",
+          "#FF9D8A",
+          "#FFDBCF"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Una vez por página: el bloque de cierre."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de sección en Fraunces."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombres de alojamientos en tarjetas."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido en Inter."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Subtítulos de sección y del hero."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetas de campos, notas y metadatos."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 18px 48px rgba(28, 57, 63, 0.16)",
+        "purpose": "Solo lo que flota: buscador, paneles y flechas de carrusel."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva por defecto: entradas, hover de tarjetas, paneles."
+      },
+      {
+        "name": "ease-quint",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Caída escalonada de la barra sobre el hero."
+      },
+      {
+        "name": "ease-sweep",
+        "value": "cubic-bezier(0.76, 0, 0.24, 1)",
+        "purpose": "Línea que se dibuja bajo la barra."
+      },
+      {
+        "name": "ease-wipe",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Barrido del botón Ingresar."
+      },
+      {
+        "name": "au-focus",
+        "value": "1400ms ease-expo",
+        "purpose": "Enfoque inicial del hero (desenfoque 16px y escala 1.06)."
+      },
+      {
+        "name": "au-rise / reveal",
+        "value": "380ms ease-expo, 16px",
+        "purpose": "Aparición al entrar en pantalla."
+      },
+      {
+        "name": "card-hover",
+        "value": "320ms lift 4px; 600-700ms zoom 1.04",
+        "purpose": "Hover de tarjetas."
+      },
+      {
+        "name": "au-pop / au-sheet",
+        "value": "200ms / 280ms ease-expo",
+        "purpose": "Popover en escritorio y hoja inferior en celular."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "panel",
+        "value": "640px"
+      },
+      {
+        "name": "nav",
+        "value": "760px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal: Gunmetal con texto blanco.",
+      "html": "<button class=\"ds-btn-primary\">Buscar alojamiento</button>",
+      "css": ".ds-btn-primary{background:var(--gunmetal);color:#fff;border:0;border-radius:12px;height:44px;padding:0 16px;font:500 14px/1 \"Inter Variable\",system-ui,sans-serif;cursor:pointer;transition:background-color .2s} .ds-btn-primary:hover{background:var(--gunmetal-hover)} .ds-btn-primary:focus-visible{outline:2px solid var(--gunmetal-hover);outline-offset:3px}"
+    },
+    {
+      "name": "Botón claro sobre el hero",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "\"Ingresar\" sobre la foto: blanco con texto negro neutro.",
+      "html": "<div class=\"ds-canvas-dark\"><button class=\"ds-btn-light\">Ingresar</button></div>",
+      "css": ".ds-canvas-dark{background:var(--gunmetal);padding:16px;border-radius:12px} .ds-btn-light{background:#fff;color:var(--ink);border:0;border-radius:12px;height:44px;padding:0 16px;font:500 14px/1 \"Inter Variable\",system-ui,sans-serif;cursor:pointer;transition:background-color .2s} .ds-btn-light:hover{background:var(--surface-muted)} .ds-btn-light:focus-visible{outline:2px solid #fff;outline-offset:3px}"
+    },
+    {
+      "name": "Botón de contorno",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Acción secundaria: borde Gunmetal, fondo transparente.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline{background:transparent;color:var(--ink);border:1px solid var(--gunmetal);border-radius:12px;height:44px;padding:0 16px;font:500 14px/1 \"Inter Variable\",system-ui,sans-serif;cursor:pointer;transition:background-color .2s} .ds-btn-outline:hover{background:var(--surface-muted)} .ds-btn-outline:focus-visible{outline:2px solid var(--gunmetal-hover);outline-offset:3px}"
+    },
+    {
+      "name": "Campo del buscador",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Botón con etiqueta y valor que abre su panel.",
+      "html": "<button class=\"ds-field\"><span class=\"ds-field-label\">Destino</span><span class=\"ds-field-value\">¿A dónde vas?</span></button>",
+      "css": ".ds-field{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:64px;min-width:200px;padding:10px 14px;background:#fff;color:var(--ink);border:1px solid var(--border-warm);border-radius:14px;text-align:left;font-family:\"Inter Variable\",system-ui,sans-serif;cursor:pointer;transition:border-color .2s} .ds-field:hover{border-color:var(--gunmetal)} .ds-field:focus-visible{border-color:var(--gunmetal);outline:2px solid var(--gunmetal);outline-offset:2px} .ds-field-label{font-size:13px;font-weight:500} .ds-field-value{font-size:15px;line-height:28px;color:var(--text-secondary)}"
+    },
+    {
+      "name": "Chips de estilo de viaje",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Selección única; el elegido con borde Gunmetal sobre gris claro.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-chip-on\">Playa y relax</button><button class=\"ds-chip\">Montaña y naturaleza</button></div>",
+      "css": ".ds-chips{display:flex;gap:8px} .ds-chip{min-height:44px;padding:0 18px;border:1px solid var(--border-warm);border-radius:12px;background:transparent;color:var(--ink);font:400 15px/1 \"Inter Variable\",system-ui,sans-serif;cursor:pointer;transition:background-color .2s,border-color .2s} .ds-chip:hover{background:var(--surface-muted)} .ds-chip-on{border-color:var(--gunmetal);background:var(--surface-muted);font-weight:500} .ds-chip:focus-visible{outline:2px solid var(--gunmetal);outline-offset:2px}"
+    },
+    {
+      "name": "Etiquetas",
+      "kind": "chip",
+      "refersTo": "badge-accent",
+      "description": "Ecru con texto negro neutro; oscura con texto blanco.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-accent\">Ecuador</span><span class=\"ds-badge ds-badge-dark\">-20%</span></div>",
+      "css": ".ds-badges{display:flex;gap:8px} .ds-badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:8px;font:500 12px/1 \"Inter Variable\",system-ui,sans-serif} .ds-badge-accent{background:var(--ecru);color:var(--ink)} .ds-badge-dark{background:var(--gunmetal);color:#fff;font-weight:700;font-size:13px}"
+    },
+    {
+      "name": "Tarjeta de alojamiento",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Plana, sin sombra; sube 4 px y la foto se acerca en hover.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-photo\"><span class=\"ds-card-ph\">Foto pendiente</span></div><div class=\"ds-card-body\"><div><h3 class=\"ds-card-title\">Casa Alameda</h3><span class=\"ds-card-meta\">Quito, Ecuador</span></div><p class=\"ds-card-price\"><b>$96</b> / noche</p></div></article>",
+      "css": ".ds-card{width:300px;display:flex;flex-direction:column;gap:16px;font-family:\"Inter Variable\",system-ui,sans-serif;color:var(--ink);transition:transform 320ms cubic-bezier(.16,1,.3,1)} .ds-card:hover{transform:translateY(-4px)} .ds-card-photo{aspect-ratio:4/3;border:1px solid var(--border-warm);border-radius:20px;background:var(--surface-muted);display:flex;align-items:flex-end;padding:16px;overflow:hidden} .ds-card-ph{font-size:12px;color:var(--text-secondary)} .ds-card-body{display:flex;justify-content:space-between;gap:16px} .ds-card-title{margin:0;font:500 18px/1.375 \"Fraunces Variable\",Georgia,serif} .ds-card-meta,.ds-card-price{font-size:14px;color:var(--text-secondary);margin:0} .ds-card-price b{font-size:18px;color:var(--ink)}"
+    },
+    {
+      "name": "Barra fija",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Blanca con borde crema y texto negro neutro; aparece al pasar el hero.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-logo\">Cozy</span><span class=\"ds-nav-links\"><a href=\"#\">Explorar</a><a href=\"#\">Ofertas</a><a href=\"#\">Destinos</a></span><button class=\"ds-nav-cta\">Ingresar</button></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:64px;padding:0 24px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--border-warm);font:700 14px/1 \"Inter Variable\",system-ui,sans-serif;color:var(--ink)} .ds-nav-logo{font:500 22px/1 \"Fraunces Variable\",Georgia,serif} .ds-nav-links{display:flex;gap:40px} .ds-nav-links a{color:var(--ink);text-decoration:none;text-underline-offset:8px} .ds-nav-links a:hover{text-decoration:underline} .ds-nav-cta{background:var(--gunmetal);color:#fff;border:0;border-radius:12px;height:44px;padding:0 16px;font-weight:500;cursor:pointer} .ds-nav-cta:hover{background:var(--gunmetal-hover)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Patio Tranquilo",
+    "overview": "Un espacio abierto y resguardado: aire, luz tibia y materiales honestos, donde cada pantalla respira y nada grita. La fotografía cálida del hero (una casa al amanecer, con la palabra \"Cozy\" pintada en el cielo) es el único momento intenso; todo lo demás es superficie blanca, texto negro neutro y un verde Gunmetal profundo que aparece solo donde hay que actuar o donde la imagen necesita apoyo. La densidad es baja y el ritmo vertical generoso: secciones amplias alternadas en blanco y gris claro, tarjetas planas con un borde crema fino.\n\nEl movimiento es de una sola voz: entradas con curvas exponenciales suaves (enfoque del hero, caída escalonada de la barra, una línea que se dibuja), un video que avanza con el scroll en lugar de reproducirse solo y apariciones discretas al entrar en pantalla. Con `prefers-reduced-motion` todo queda quieto y visible desde el inicio, con el primer cuadro del video como imagen fija.\n\nLas referencias son las pantallas de Claude Design (`docs/diseno/claude-design/`), traducidas a esta paleta. El diseño original usaba texto crema sobre fondos oscuros, grises fuera de paleta y degradados como marcador de foto; nada de eso forma parte del sistema.",
+    "keyCharacteristics": [
+      "Superficies blancas y gris claro; el crema solo dibuja líneas.",
+      "Texto negro neutro sobre claro; blanco puro sobre todo lo oscuro.",
+      "Títulos en Fraunces y todo lo demás en Inter.",
+      "Tarjetas planas sin sombra; solo flota el buscador.",
+      "Movimiento orquestado una vez, sin efectos sueltos, y siempre opcional."
+    ],
+    "rules": [
+      {
+        "name": "La regla del Blanco sobre Oscuro",
+        "body": "Todo texto o ícono sobre Gunmetal, Gunmetal hover, el hero con foto o el rojo de error es blanco puro (#FFFFFF): nunca crema, Ecru, gris ni blanco con opacidad, tampoco en hover.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de la Línea Crema",
+        "body": "El crema existe solo como línea o separador. Nunca rellena tarjetas, botones, etiquetas, estados ni texto.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del Velo",
+        "body": "El texto blanco sobre fotografía se apoya en un velo Gunmetal (abajo hasta 0.62 de opacidad y arriba 0.5 bajo la barra), nunca en sombras de texto.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las Dos Voces",
+        "body": "Fraunces solo en títulos (h1 a h4 y nombres de destino en el mosaico); Inter en todo lo demás, incluidos precios y botones.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla de lo que Flota",
+        "body": "Solo lo que flota sobre el contenido lleva sombra; las tarjetas nunca.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** usar blanco puro (#FFFFFF) para todo texto e ícono sobre Gunmetal, el hero o el rojo de error.",
+      "**Do** poner el Ecru solo con texto negro neutro (#111111) encima (7.89:1).",
+      "**Do** alternar secciones en blanco y gris claro (#F4F4F4) y separarlas con espacio, no con cajas.",
+      "**Do** apoyar el texto blanco sobre fotografía en un velo Gunmetal.",
+      "**Do** mostrar el marcador \"Foto pendiente\" mientras no haya fotografía real.",
+      "**Do** respetar `prefers-reduced-motion`: sin video controlado por scroll, primer cuadro fijo y todo visible desde el inicio."
+    ],
+    "donts": [
+      "**Don't** usar crema (#E6D5AE ni #F7E5C1) como relleno de tarjetas, botones, etiquetas, estados ni como color de texto.",
+      "**Don't** poner texto crema, Ecru o blanco translúcido sobre fondos oscuros.",
+      "**Don't** usar degradados como marcador de foto ni como decoración.",
+      "**Don't** dar sombra a las tarjetas; solo flota el buscador.",
+      "**Don't** usar el verde de éxito (#3E8E5A) para texto: no llega a 4.5:1.",
+      "**Don't** atenuar el botón primario con opacidad para indicar que falta información: el texto blanco dejaría de cumplir el contraste."
+    ]
+  }
+}
