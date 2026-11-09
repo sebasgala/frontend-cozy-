@@ -169,7 +169,7 @@ export async function registrarCliente(datos: DatosRegistro): Promise<SesionClie
   // 1. Registro en backend vía GraphQL
   await graphqlFetch<{ registrarse: UsuarioResponseDto }>(
     `
-    mutation RegistrarCliente($datos: RegistroUsuarioInput!) {
+    mutation RegistrarCliente($datos: RegistroInput!) {
       registrarse(datos: $datos) {
         id
         email
@@ -209,8 +209,8 @@ export async function iniciarSesion(datos: DatosIngreso): Promise<SesionCliente>
     }
   }>(
     `
-    mutation IniciarSesion($datos: LoginInput!) {
-      iniciarSesion(datos: $datos) {
+    mutation IniciarSesion($email: String!, $password: String!) {
+      iniciarSesion(email: $email, password: $password) {
         access_token
         token_type
         expires_in
@@ -226,10 +226,8 @@ export async function iniciarSesion(datos: DatosIngreso): Promise<SesionCliente>
     }
   `,
     {
-      datos: {
-        email: datos.correo.trim().toLowerCase(),
-        password: datos.contrasena,
-      },
+      email: datos.correo.trim().toLowerCase(),
+      password: datos.contrasena,
     },
   )
 

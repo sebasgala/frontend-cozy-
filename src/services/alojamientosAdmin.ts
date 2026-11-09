@@ -30,9 +30,7 @@ const FRAGMENTO_ALOJAMIENTO_ADMIN = `
   fotos
   facilidades
   politicas
-  propietarioId
   activo
-  createdAt
   updatedAt
   _links
 `

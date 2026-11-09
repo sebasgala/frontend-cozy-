@@ -106,7 +106,7 @@ const FRAGMENTO_ALOJAMIENTO = `
   facilities
   policies
   rooms {
-    id
+    id: product_id
     name
     base_price
     max_adults
@@ -281,8 +281,8 @@ export async function consultarDisponibilidad(
 ): Promise<Disponibilidad> {
   const respuesta = await graphqlFetch<{ disponibilidad: Disponibilidad }>(
     `
-    query ConsultarDisponibilidad($alojamientoId: Int!, $fechas: RangoFechasInput!, $ocupantes: OcupantesInput!) {
-      disponibilidad(alojamientoId: $alojamientoId, fechas: $fechas, ocupantes: $ocupantes) {
+    query ConsultarDisponibilidad($alojamientoId: Int!, $checkin: String!, $checkout: String!, $guests: HuespedesInput!) {
+      disponibilidad(alojamientoId: $alojamientoId, checkin: $checkin, checkout: $checkout, guests: $guests) {
         id
         currency
         url
@@ -309,8 +309,9 @@ export async function consultarDisponibilidad(
   `,
     {
       alojamientoId,
-      fechas: { checkin, checkout },
-      ocupantes: {
+      checkin,
+      checkout,
+      guests: {
         number_of_adults: guests.number_of_adults,
         number_of_rooms: guests.number_of_rooms,
         children: guests.children ?? [],
