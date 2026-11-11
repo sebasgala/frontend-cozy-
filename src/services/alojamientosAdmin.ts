@@ -70,13 +70,13 @@ export async function listarAlojamientos(filtro: FiltroAlojamientos = {}): Promi
 export async function obtenerAlojamientoAdmin(id: number | string): Promise<AlojamientoAdmin> {
   const respuesta = await graphqlFetch<{ alojamientoAdmin: AlojamientoAdmin }>(
     `
-    query ObtenerAlojamientoAdmin($id: ID!) {
+    query ObtenerAlojamientoAdmin($id: Int!) {
       alojamientoAdmin(id: $id) {
         ${FRAGMENTO_ALOJAMIENTO_ADMIN}
       }
     }
   `,
-    { id: String(id) },
+    { id: Number(id) },
   )
   return respuesta.alojamientoAdmin
 }
@@ -100,13 +100,13 @@ export async function crearAlojamiento(datos: DatosAlojamiento): Promise<Alojami
 export async function actualizarAlojamiento(id: number, datos: Partial<DatosAlojamiento>): Promise<AlojamientoAdmin> {
   const respuesta = await graphqlFetch<{ actualizarAlojamiento: AlojamientoAdmin }>(
     `
-    mutation ActualizarAlojamiento($id: ID!, $datos: ActualizarAlojamientoInput!) {
+    mutation ActualizarAlojamiento($id: Int!, $datos: ActualizarAlojamientoInput!) {
       actualizarAlojamiento(id: $id, datos: $datos) {
         ${FRAGMENTO_ALOJAMIENTO_ADMIN}
       }
     }
   `,
-    { id: String(id), datos },
+    { id: Number(id), datos },
   )
   return respuesta.actualizarAlojamiento
 }
@@ -115,11 +115,11 @@ export async function actualizarAlojamiento(id: number, datos: Partial<DatosAloj
 export async function darDeBajaAlojamiento(id: number): Promise<void> {
   await graphqlFetch<{ eliminarAlojamiento: boolean }>(
     `
-    mutation EliminarAlojamiento($id: ID!) {
+    mutation EliminarAlojamiento($id: Int!) {
       eliminarAlojamiento(id: $id)
     }
   `,
-    { id: String(id) },
+    { id: Number(id) },
   )
 }
 
@@ -146,7 +146,7 @@ export async function listarCiudadesAdmin(): Promise<CiudadAdmin[]> {
 export async function crearCiudad(datos: { nombre: string; pais: string }): Promise<CiudadAdmin> {
   const respuesta = await graphqlFetch<{ crearCiudad: CiudadAdmin }>(
     `
-    mutation CrearCiudad($datos: CrearCiudadInput!) {
+    mutation CrearCiudad($datos: DatosCiudadInput!) {
       crearCiudad(datos: $datos) {
         id
         nombre

@@ -100,7 +100,7 @@ export async function reactivarUsuario(id: string): Promise<UsuarioAdmin> {
 export async function cambiarRolUsuario(id: string, rol: RolUsuario): Promise<UsuarioAdmin> {
   const respuesta = await graphqlFetch<{ cambiarRolUsuario: UsuarioAdmin }>(
     `
-    mutation CambiarRolUsuario($id: ID!, $rol: RolUsuario!) {
+    mutation CambiarRolUsuario($id: ID!, $rol: String!) {
       cambiarRolUsuario(id: $id, rol: $rol) {
         ${FRAGMENTO_USUARIO_ADMIN}
       }

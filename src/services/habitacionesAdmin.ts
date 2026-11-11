@@ -140,7 +140,7 @@ export async function listarDisponibilidad(habitacionId: string, desde: string, 
 export async function editarDisponibilidad(habitacionId: string, datos: DatosEdicionDisponibilidad): Promise<EdicionDisponibilidad> {
   const respuesta = await graphqlFetch<{ editarDisponibilidad: EdicionDisponibilidad }>(
     `
-    mutation EditarDisponibilidad($habitacionId: ID!, $datos: EditarDisponibilidadInput!) {
+    mutation EditarDisponibilidad($habitacionId: ID!, $datos: EdicionDisponibilidadInput!) {
       editarDisponibilidad(habitacionId: $habitacionId, datos: $datos) {
         habitacionId
         dryRun
