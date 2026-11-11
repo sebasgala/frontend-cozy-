@@ -9,6 +9,7 @@ import DisponibilidadPage from '@/pages/admin/DisponibilidadPage'
 import HabitacionFormPage from '@/pages/admin/HabitacionFormPage'
 import HabitacionesPage from '@/pages/admin/HabitacionesPage'
 import PanelAdminPage from '@/pages/admin/PanelAdminPage'
+import RecepcionPage from '@/pages/admin/RecepcionPage'
 import ReservasAdminPage from '@/pages/admin/ReservasAdminPage'
 import UsuariosPage from '@/pages/admin/UsuariosPage'
 import RaizLayout from '@/layouts/RaizLayout'
@@ -74,15 +75,79 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <PanelAdminPage /> },
-          { path: 'alojamientos', element: <AlojamientosPage /> },
-          { path: 'alojamientos/nuevo', element: <AlojamientoFormPage /> },
-          { path: 'alojamientos/:id/editar', element: <AlojamientoFormPage /> },
-          { path: 'ciudades', element: <CiudadesPage /> },
-          { path: 'habitaciones', element: <HabitacionesPage /> },
-          { path: 'habitaciones/nueva', element: <HabitacionFormPage /> },
-          { path: 'habitaciones/:id/editar', element: <HabitacionFormPage /> },
-          { path: 'disponibilidad', element: <DisponibilidadPage /> },
-          { path: 'reservas', element: <ReservasAdminPage /> },
+          { path: 'recepcion', element: <RecepcionPage /> },
+          {
+            path: 'alojamientos',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <AlojamientosPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'alojamientos/nuevo',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <AlojamientoFormPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'alojamientos/:id/editar',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <AlojamientoFormPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'ciudades',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <CiudadesPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'habitaciones',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <HabitacionesPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'habitaciones/nueva',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <HabitacionFormPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'habitaciones/:id/editar',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <HabitacionFormPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'disponibilidad',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <DisponibilidadPage />
+              </RequiereRol>
+            ),
+          },
+          {
+            path: 'reservas',
+            element: (
+              <RequiereRol roles={['administrador', 'superadmin']}>
+                <ReservasAdminPage />
+              </RequiereRol>
+            ),
+          },
           { path: 'cuenta', element: <CuentaAdminPage /> },
           {
             path: 'usuarios',

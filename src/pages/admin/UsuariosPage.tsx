@@ -27,7 +27,7 @@ interface Accion {
 }
 type Resultado = { clave: string; datos: Pagina<UsuarioAdmin> } | { clave: string; error: string }
 
-const ROLES: Record<RolUsuario, string> = { cliente: 'Cliente', administrador: 'Administrador', superadmin: 'Superadministrador' }
+const ROLES: Record<RolUsuario, string> = { cliente: 'Cliente', administrador: 'Administrador', superadmin: 'Superadministrador', recepcion: 'Recepción' }
 const ESTADOS: Record<EstadoUsuario, { etiqueta: string; clase: string }> = {
   pendiente: { etiqueta: 'Pendiente', clase: 'bg-[var(--dutch-white)] text-ink' },
   activo: { etiqueta: 'Activa', clase: 'bg-success/12 text-success' },

@@ -1,7 +1,7 @@
 import { useSesion } from '@/hooks/useSesion'
 import { EncabezadoAdmin } from './EncabezadoAdmin'
 
-const ETIQUETA_ROL = { cliente: 'Cliente', administrador: 'Administrador', superadmin: 'Superadministrador' } as const
+const ETIQUETA_ROL = { cliente: 'Cliente', administrador: 'Administrador', superadmin: 'Superadministrador', recepcion: 'Recepción' } as const
 const ETIQUETA_ESTADO = { pendiente: 'Pendiente', activo: 'Activa', suspendido: 'Suspendida' } as const
 
 /** Datos de la cuenta con la que se entró al panel (de /auth/me, que AdminLayout consulta al entrar) */

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, Navigate } from 'react-router'
 import { useSesion } from '@/hooks/useSesion'
 import { contar, mensajeDeError } from '@/services/admin'
 import { EncabezadoAdmin } from './EncabezadoAdmin'
@@ -21,6 +21,7 @@ export default function PanelAdminPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    if (sesion?.rol === 'recepcion') return
     let vigente = true
     const pedidos: Promise<Indicador>[] = [
       contar('/admin/alojamientos', { activo: true }).then((valor) => ({ etiqueta: 'Alojamientos activos', valor, enlace: '/admin/alojamientos' })),
@@ -37,7 +38,9 @@ export default function PanelAdminPage() {
     return () => {
       vigente = false
     }
-  }, [esSuperadmin])
+  }, [esSuperadmin, sesion?.rol])
+
+  if (sesion?.rol === 'recepcion') return <Navigate to="/admin/recepcion" replace />
 
   return (
     <>

@@ -1,0 +1,77 @@
+// Tipos de la recepción del alojamiento (Bloque R). Siguen las respuestas de /admin/recepcion vía GraphQL.
+import type { EstadoReserva, Pagina } from './admin'
+
+export interface ContextoRecepcion {
+  alojamientoId: number | null
+  alojamientoNombre: string | null
+  alojamientoCodigo: string | null
+}
+
+export interface ReservaRecepcion {
+  orderId: string
+  locator: string
+  /** BK-HOTEL-… */
+  codigoReserva: string
+  estado: EstadoReserva
+  alojamientoId: number
+  alojamientoNombre: string
+  habitacionId: string
+  /** Tipo de habitación vendido (contrato); no cambia al reasignar */
+  habitacionNombre: string
+  /** Habitación física asignada en recepción */
+  habitacionAsignada: string | null
+  llegada: string
+  salida: string
+  noches: number
+  habitaciones: number
+  titular: {
+    nombre: string
+    email: string
+    tipoDocumento: string | null
+    /** false en reservas sin documento registrado: el documento presentado no se puede contrastar */
+    documentoRegistrado: boolean
+  }
+  huespedes: { adultos: number; ninos: number[] }
+  observaciones: string | null
+  earlyCheckin: { autorizado: boolean; desde: string | null }
+  /** Instante (ISO) desde el que se puede aprobar el check-in: 14:00 de Guayaquil o el early autorizado */
+  checkinHabilitadoDesde: string
+  /** Primer instante (ISO) en que ya no se puede aprobar el check-in */
+  checkinCierraEn: string
+  checkInEn: string | null
+}
+
+export type PaginaRecepcion = Pagina<ReservaRecepcion>
+
+export interface FiltroRecepcion {
+  estado?: EstadoReserva
+  llegadaDesde?: string
+  llegadaHasta?: string
+  page?: number
+  limit?: number
+}
+
+export interface HabitacionReasignable {
+  id: string
+  nombre: string
+  tipo: string
+  actual: boolean
+}
+
+export interface DatosCheckin {
+  documentoPresentado: string
+  huespedesPresentes: number
+  codigoRecepcionista: string
+  observaciones?: string
+  documentoVerificadoFisicamente: boolean
+}
+
+export interface RegistroAuditoriaRecepcion {
+  id: string
+  accion: string
+  rol: string
+  motivo: string | null
+  datosPrevios: Record<string, unknown> | null
+  datosNuevos: Record<string, unknown> | null
+  creadoEn: string
+}

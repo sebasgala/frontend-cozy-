@@ -3,6 +3,7 @@ import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-route
 import {
   BedDouble,
   CalendarDays,
+  ConciergeBell,
   House,
   LayoutDashboard,
   LogOut,
@@ -30,12 +31,13 @@ interface EnlaceAdmin {
 }
 
 const PRINCIPAL: EnlaceAdmin[] = [
-  { etiqueta: 'Panel', ruta: '/admin', icono: LayoutDashboard },
-  { etiqueta: 'Alojamientos', ruta: '/admin/alojamientos', icono: House },
-  { etiqueta: 'Habitaciones', ruta: '/admin/habitaciones', icono: BedDouble },
-  { etiqueta: 'Disponibilidad', ruta: '/admin/disponibilidad', icono: CalendarDays },
-  { etiqueta: 'Reservas', ruta: '/admin/reservas', icono: ReceiptText },
-  { etiqueta: 'Ciudades', ruta: '/admin/ciudades', icono: MapPin },
+  { etiqueta: 'Panel', ruta: '/admin', icono: LayoutDashboard, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Recepción', ruta: '/admin/recepcion', icono: ConciergeBell, roles: ['recepcion', 'administrador', 'superadmin'] },
+  { etiqueta: 'Alojamientos', ruta: '/admin/alojamientos', icono: House, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Habitaciones', ruta: '/admin/habitaciones', icono: BedDouble, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Disponibilidad', ruta: '/admin/disponibilidad', icono: CalendarDays, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Reservas', ruta: '/admin/reservas', icono: ReceiptText, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Ciudades', ruta: '/admin/ciudades', icono: MapPin, roles: ['administrador', 'superadmin'] },
   { etiqueta: 'Mi cuenta', ruta: '/admin/cuenta', icono: UserRound },
 ]
 
@@ -45,6 +47,7 @@ const ETIQUETA_ROL: Record<RolUsuario, string> = {
   cliente: 'Cliente',
   administrador: 'Administrador',
   superadmin: 'Superadministrador',
+  recepcion: 'Recepción',
 }
 
 /**
@@ -208,9 +211,12 @@ function PantallaVerificando() {
   )
 }
 
-/** Envuelve una pantalla que solo pueden ver ciertos roles. Los demás vuelven al panel. */
+/** Envuelve una pantalla que solo pueden ver ciertos roles. Los demás vuelven al panel o a recepción. */
 export function RequiereRol({ roles, children }: { roles: RolUsuario[]; children: React.ReactNode }) {
   const sesion = useSesion()
-  if (!sesion?.rol || !roles.includes(sesion.rol)) return <Navigate to="/admin" replace />
+  if (!sesion?.rol || !roles.includes(sesion.rol)) {
+    const destino = sesion?.rol === 'recepcion' ? '/admin/recepcion' : '/admin'
+    return <Navigate to={destino} replace />
+  }
   return <>{children}</>
 }

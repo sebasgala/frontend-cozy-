@@ -86,6 +86,8 @@ async function renovar(): Promise<boolean> {
             apellido
             rol
             estado
+            alojamientoId
+            requiereCambioClave
           }
         }
       }
@@ -102,6 +104,8 @@ async function renovar(): Promise<boolean> {
       iniciales: iniciales(usuario.nombre, usuario.apellido),
       rol: usuario.rol,
       estado: usuario.estado,
+      alojamientoId: usuario.alojamientoId ?? null,
+      requiereCambioClave: usuario.requiereCambioClave ?? false,
     })
     return true
   } catch (error) {
@@ -157,6 +161,8 @@ interface UsuarioResponseDto {
   apellido: string
   rol: RolUsuario
   estado: EstadoUsuario
+  alojamientoId?: number | null
+  requiereCambioClave?: boolean | null
   createdAt: string
 }
 
@@ -221,6 +227,8 @@ export async function iniciarSesion(datos: DatosIngreso): Promise<SesionCliente>
           apellido
           rol
           estado
+          alojamientoId
+          requiereCambioClave
         }
       }
     }
@@ -241,6 +249,8 @@ export async function iniciarSesion(datos: DatosIngreso): Promise<SesionCliente>
     iniciales: iniciales(usuario.nombre, usuario.apellido),
     rol: usuario.rol,
     estado: usuario.estado,
+    alojamientoId: usuario.alojamientoId ?? null,
+    requiereCambioClave: usuario.requiereCambioClave ?? false,
   }
   establecerSesion(sesion)
   return sesion
@@ -266,6 +276,8 @@ export async function obtenerPerfil(): Promise<SesionCliente | null> {
           apellido
           rol
           estado
+          alojamientoId
+          requiereCambioClave
         }
       }
     `)
@@ -279,6 +291,8 @@ export async function obtenerPerfil(): Promise<SesionCliente | null> {
       iniciales: iniciales(usuario.nombre, usuario.apellido),
       rol: usuario.rol,
       estado: usuario.estado,
+      alojamientoId: usuario.alojamientoId ?? null,
+      requiereCambioClave: usuario.requiereCambioClave ?? false,
     }
     establecerSesion(actualizada)
     return actualizada
@@ -291,9 +305,14 @@ export async function obtenerPerfil(): Promise<SesionCliente | null> {
   }
 }
 
-/** true si la cuenta puede entrar al panel de administración */
+/** true si la cuenta puede entrar al panel interno (administración o recepción) */
 export function esAdministracion(rol: RolUsuario | undefined): boolean {
-  return rol === 'administrador' || rol === 'superadmin'
+  return rol === 'administrador' || rol === 'superadmin' || rol === 'recepcion'
+}
+
+/** true si la cuenta es de recepción: solo opera reservas de su alojamiento (sin usuarios, precios ni catálogo) */
+export function esRecepcion(rol: RolUsuario | undefined): boolean {
+  return rol === 'recepcion'
 }
 
 export function cerrarSesion(): Promise<void> {
