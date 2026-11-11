@@ -47,6 +47,7 @@ export interface FiltroRecepcion {
   estado?: EstadoReserva
   llegadaDesde?: string
   llegadaHasta?: string
+  alojamientoId?: number
   page?: number
   limit?: number
 }

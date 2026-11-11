@@ -58,6 +58,7 @@ export async function listarReservasRecepcion(filtro: FiltroRecepcion = {}): Pro
         ...(filtro.estado && { estado: filtro.estado }),
         ...(filtro.llegadaDesde && { llegadaDesde: filtro.llegadaDesde }),
         ...(filtro.llegadaHasta && { llegadaHasta: filtro.llegadaHasta }),
+        ...(filtro.alojamientoId != null && { alojamientoId: filtro.alojamientoId }),
         ...(filtro.page != null && { page: filtro.page }),
         ...(filtro.limit != null && { limit: filtro.limit }),
       },

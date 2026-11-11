@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { CheckCircle2, Clock, History, LogIn, SlidersHorizontal, UserCheck, Users, BedDouble } from 'lucide-react'
+import { CampoSelect } from '@/components/admin/CampoSelect'
 import { ChipsPestanas } from '@/components/ChipsPestanas'
 import {
   ModalAuditoria,
@@ -9,6 +11,7 @@ import {
   ModalReasignar,
 } from '@/components/recepcion/ModalesRecepcion'
 import { Button } from '@/components/ui/button'
+import { useAlojamientosAdmin } from '@/hooks/useAlojamientosAdmin'
 import { useSesion } from '@/hooks/useSesion'
 import { formatearFecha, formatearNoches } from '@/lib/formato'
 import { horaGuayaquil, hoyGuayaquil, ventanaCheckin } from '@/lib/recepcion'
@@ -54,6 +57,9 @@ type EstadoCarga = { clave: string; datos: PaginaRecepcion } | { clave: string; 
 export default function RecepcionPage() {
   const sesion = useSesion()
   const esAdminOSuper = sesion?.rol === 'administrador' || sesion?.rol === 'superadmin'
+  const esSuperadmin = sesion?.rol === 'superadmin'
+  const { alojamientos, error: errorAlojamientos } = useAlojamientosAdmin()
+  const [params, setParams] = useSearchParams()
 
   const [contexto, setContexto] = useState<ContextoRecepcion | null>(null)
   const [estado, setEstado] = useState<FiltroEstado>('todas')
@@ -63,6 +69,10 @@ export default function RecepcionPage() {
   const [pagina, setPagina] = useState(1)
   const [version, setVersion] = useState(0)
 
+  // El superadmin puede elegir el alojamiento que desea gestionar vía selector o URL (?alojamiento=ID)
+  const paramAlojamiento = params.get('alojamiento')
+  const alojamientoSeleccionadoId = esSuperadmin && paramAlojamiento ? Number(paramAlojamiento) : undefined
+
   const [estadoCarga, setEstadoCarga] = useState<EstadoCarga | null>(null)
   const [aviso, setAviso] = useState('')
 
@@ -70,7 +80,7 @@ export default function RecepcionPage() {
 
   const desde = modoFecha === 'hoy' ? hoyGuayaquil() : modoFecha === 'personalizado' ? llegadaDesde : ''
   const hasta = modoFecha === 'hoy' ? hoyGuayaquil() : modoFecha === 'personalizado' ? llegadaHasta : ''
-  const clave = `${estado}|${modoFecha}|${desde}|${hasta}|${pagina}|${version}`
+  const clave = `${alojamientoSeleccionadoId ?? ''}|${estado}|${modoFecha}|${desde}|${hasta}|${pagina}|${version}`
   const cargando = estadoCarga?.clave !== clave
   const resultado = estadoCarga && 'datos' in estadoCarga && estadoCarga.clave === clave ? estadoCarga.datos : null
   const error = estadoCarga && 'error' in estadoCarga && estadoCarga.clave === clave ? estadoCarga.error : ''
@@ -97,6 +107,7 @@ export default function RecepcionPage() {
       estado: estado === 'todas' ? undefined : estado,
       llegadaDesde: desde || undefined,
       llegadaHasta: hasta || undefined,
+      alojamientoId: alojamientoSeleccionadoId,
       page: pagina,
       limit: POR_PAGINA,
     })
@@ -120,7 +131,7 @@ export default function RecepcionPage() {
     return () => {
       vigente = false
     }
-  }, [clave, estado, desde, hasta, pagina])
+  }, [clave, estado, desde, hasta, pagina, alojamientoSeleccionadoId])
 
   const alCompletarModal = (reservaActualizada: ReservaRecepcion, mensajeAviso: string) => {
     setModalActivo(null)
@@ -138,9 +149,14 @@ export default function RecepcionPage() {
     setVersion((v) => v + 1)
   }
 
-  const tituloAlojamiento = contexto?.alojamientoNombre
-    ? `${contexto.alojamientoNombre}${contexto.alojamientoCodigo ? ` (${contexto.alojamientoCodigo})` : ''}`
-    : 'Alojamiento no asignado'
+  const alojamientoActual = alojamientos?.find((a) => a.id === alojamientoSeleccionadoId)
+  const tituloAlojamiento = esSuperadmin
+    ? alojamientoActual
+      ? `${alojamientoActual.nombre} (ID: ${alojamientoActual.id})`
+      : 'Todos los alojamientos'
+    : contexto?.alojamientoNombre
+      ? `${contexto.alojamientoNombre}${contexto.alojamientoCodigo ? ` (${contexto.alojamientoCodigo})` : ''}`
+      : 'Alojamiento no asignado'
 
   return (
     <>
@@ -154,6 +170,12 @@ export default function RecepcionPage() {
           </div>
         }
       />
+
+      {errorAlojamientos && (
+        <p role="alert" className="mb-4 rounded-2xl bg-white p-4 text-sm font-medium text-error">
+          {errorAlojamientos}
+        </p>
+      )}
 
       {aviso && (
         <div role="status" className="mb-6 flex items-center justify-between rounded-2xl bg-success/10 px-4 py-3 text-sm text-success">
@@ -175,6 +197,28 @@ export default function RecepcionPage() {
         <p role="alert" className="mb-6 rounded-2xl bg-white p-5 text-sm font-medium text-error">
           {error}
         </p>
+      )}
+
+      {/* Selector de alojamiento para Superadmin */}
+      {esSuperadmin && alojamientos && alojamientos.length > 0 && (
+        <div className="mb-6 max-w-md rounded-[20px] border border-border bg-white p-4">
+          <CampoSelect
+            etiqueta="Filtrar por Alojamiento (Superadmin)"
+            value={paramAlojamiento ?? ''}
+            onChange={(e) => {
+              setPagina(1)
+              setParams(e.target.value ? { alojamiento: e.target.value } : {}, { replace: true })
+            }}
+            className="h-11 w-full"
+          >
+            <option value="">Todos los alojamientos</option>
+            {alojamientos.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.nombre} (ID: {a.id}){!a.activo ? ' - inactivo' : ''}
+              </option>
+            ))}
+          </CampoSelect>
+        </div>
       )}
 
       {/* Barra de Filtros */}
