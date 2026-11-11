@@ -63,7 +63,7 @@ export default function RecepcionPage() {
 
   const [contexto, setContexto] = useState<ContextoRecepcion | null>(null)
   const [estado, setEstado] = useState<FiltroEstado>('todas')
-  const [modoFecha, setModoFecha] = useState<FiltroFechaModo>('hoy')
+  const [modoFecha, setModoFecha] = useState<FiltroFechaModo>('todas')
   const [llegadaDesde, setLlegadaDesde] = useState(hoyGuayaquil())
   const [llegadaHasta, setLlegadaHasta] = useState(hoyGuayaquil())
   const [pagina, setPagina] = useState(1)
