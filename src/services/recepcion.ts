@@ -55,6 +55,7 @@ export async function listarReservasRecepcion(filtro: FiltroRecepcion = {}): Pro
   `,
     {
       filtro: {
+        ...(filtro.pendientesCheckin && { pendientesCheckin: true }),
         ...(filtro.estado && { estado: filtro.estado }),
         ...(filtro.llegadaDesde && { llegadaDesde: filtro.llegadaDesde }),
         ...(filtro.llegadaHasta && { llegadaHasta: filtro.llegadaHasta }),

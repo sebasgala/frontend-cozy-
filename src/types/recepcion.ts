@@ -44,6 +44,8 @@ export interface ReservaRecepcion {
 export type PaginaRecepcion = Pagina<ReservaRecepcion>
 
 export interface FiltroRecepcion {
+  /** CONFIRMED sin check-in con la estancia vigente (vista por defecto del mostrador) */
+  pendientesCheckin?: boolean
   estado?: EstadoReserva
   llegadaDesde?: string
   llegadaHasta?: string

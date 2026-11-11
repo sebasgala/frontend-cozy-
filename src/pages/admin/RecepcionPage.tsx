@@ -25,7 +25,8 @@ import { EncabezadoAdmin } from './EncabezadoAdmin'
 
 const POR_PAGINA = 10
 
-type FiltroEstado = 'todas' | EstadoReserva
+// 'por_llegar': reservas confirmadas que aún no hicieron check-in y cuya estancia no terminó (vista por defecto)
+type FiltroEstado = 'por_llegar' | 'todas' | EstadoReserva
 type FiltroFechaModo = 'hoy' | 'todas' | 'personalizado'
 
 const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
@@ -33,11 +34,13 @@ const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
   CHECKED_IN: { etiqueta: 'Alojado', clase: 'bg-primary/10 text-primary' },
   CHECKED_OUT: { etiqueta: 'Finalizada', clase: 'bg-[var(--dutch-white)] text-ink' },
   CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
-  PENDING: { etiqueta: 'Pendiente', clase: 'bg-warning/10 text-warning' },
+  PENDING: { etiqueta: 'Reservada', clase: 'bg-warning/10 text-warning' },
 }
 
 const OPCIONES_ESTADO: { id: FiltroEstado; etiqueta: string }[] = [
+  { id: 'por_llegar', etiqueta: 'Por llegar' },
   { id: 'todas', etiqueta: 'Todas' },
+  { id: 'PENDING', etiqueta: 'Reservadas' },
   { id: 'CONFIRMED', etiqueta: 'Confirmadas' },
   { id: 'CHECKED_IN', etiqueta: 'Alojados' },
   { id: 'CHECKED_OUT', etiqueta: 'Finalizadas' },
@@ -62,7 +65,7 @@ export default function RecepcionPage() {
   const [params, setParams] = useSearchParams()
 
   const [contexto, setContexto] = useState<ContextoRecepcion | null>(null)
-  const [estado, setEstado] = useState<FiltroEstado>('todas')
+  const [estado, setEstado] = useState<FiltroEstado>('por_llegar')
   const [modoFecha, setModoFecha] = useState<FiltroFechaModo>('todas')
   const [llegadaDesde, setLlegadaDesde] = useState(hoyGuayaquil())
   const [llegadaHasta, setLlegadaHasta] = useState(hoyGuayaquil())
@@ -104,7 +107,8 @@ export default function RecepcionPage() {
     let vigente = true
 
     listarReservasRecepcion({
-      estado: estado === 'todas' ? undefined : estado,
+      pendientesCheckin: estado === 'por_llegar',
+      estado: estado === 'todas' || estado === 'por_llegar' ? undefined : estado,
       llegadaDesde: desde || undefined,
       llegadaHasta: hasta || undefined,
       alojamientoId: alojamientoSeleccionadoId,
@@ -322,9 +326,11 @@ export default function RecepcionPage() {
             <SlidersHorizontal aria-hidden="true" className="size-10 text-muted-foreground/60" />
             <p className="mt-3 font-medium text-ink">No se encontraron reservas</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {modoFecha === 'hoy'
-                ? 'No hay llegadas registradas para hoy con los filtros aplicados.'
-                : 'Intenta cambiar los filtros de fecha o estado.'}
+              {estado === 'por_llegar'
+                ? 'No hay reservas confirmadas pendientes de check-in con estos filtros.'
+                : modoFecha === 'hoy'
+                  ? 'No hay llegadas registradas para hoy con los filtros aplicados.'
+                  : 'Intenta cambiar los filtros de fecha o estado.'}
             </p>
           </div>
         ) : (
