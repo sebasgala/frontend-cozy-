@@ -10,9 +10,10 @@ import {
   cambiarObservaciones,
   listarAuditoriaRecepcion,
   listarHabitacionesReasignables,
+  realizarCheckout,
   reasignarHabitacion,
 } from '@/services/recepcion'
-import type { HabitacionReasignable, RegistroAuditoriaRecepcion, ReservaRecepcion } from '@/types/recepcion'
+import type { DatosCheckout, HabitacionReasignable, MetodoPagoConsumos, RegistroAuditoriaRecepcion, ReservaRecepcion } from '@/types/recepcion'
 import { formatearFecha, formatearNoches } from '@/lib/formato'
 import { datetimeLocalAGuayaquil, horaGuayaquil, ventanaCheckin } from '@/lib/recepcion'
 import { cn } from '@/lib/utils'
@@ -422,6 +423,135 @@ export function ModalEarlyCheckin({ reserva, onCerrar, onHecho }: PropsModal) {
         <CampoTexto etiqueta="Habilitar desde" type="datetime-local" required value={desde} onChange={(e) => setDesde(e.target.value)} />
         <CampoTexto etiqueta="Motivo" maxLength={300} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
       </div>
+      <ErrorAccion texto={error} />
+    </DialogoConfirmacion>
+  )
+}
+
+// ───────────────────────── Check-out (CHECKED_IN → CHECKED_OUT, habitación física SUCIA) ─────────────────────────
+
+interface FilaConsumo {
+  item: string
+  cantidad: string
+  precio: string
+}
+
+const PRECIO = /^\d{1,9}([.,]\d{1,2})?$/
+const MAXIMO_PRECIO = 999_999_999.99
+const aMoney = (texto: string): string | null => {
+  const t = texto.trim()
+  if (!PRECIO.test(t)) return null
+  const n = Number(t.replace(',', '.'))
+  return n > 0 && n <= MAXIMO_PRECIO ? n.toFixed(2) : null
+}
+const METODOS_PAGO: { id: MetodoPagoConsumos; etiqueta: string }[] = [
+  { id: 'CARGO_A_RESERVA', etiqueta: 'Cargo a la reserva' },
+  { id: 'EFECTIVO', etiqueta: 'Efectivo' },
+  { id: 'TARJETA_REGISTRADA', etiqueta: 'Tarjeta registrada' },
+]
+
+export function ModalCheckout({ reserva, onCerrar, onHecho }: { reserva: ReservaRecepcion; onCerrar: () => void; onHecho: (aviso: string) => void }) {
+  const [consumos, setConsumos] = useState<FilaConsumo[]>([])
+  const [metodo, setMetodo] = useState<MetodoPagoConsumos>('CARGO_A_RESERVA')
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState('')
+
+  // Una fila totalmente vacía se ignora; una a medio llenar bloquea la confirmación
+  const llenas = consumos.filter((c) => c.item.trim() || c.precio.trim())
+  const cantidadValida = (c: FilaConsumo) => c.cantidad.trim() === '' || (Number.isInteger(Number(c.cantidad)) && Number(c.cantidad) >= 1 && Number(c.cantidad) <= 100)
+  const filaValida = (c: FilaConsumo) => c.item.trim().length >= 1 && c.item.trim().length <= 80 && aMoney(c.precio) !== null && cantidadValida(c)
+  const valido = llenas.every(filaValida)
+
+  const cambiar = (i: number, campo: keyof FilaConsumo, valor: string) => setConsumos((fs) => fs.map((f, j) => (j === i ? { ...f, [campo]: valor } : f)))
+
+  const confirmar = async () => {
+    if (!valido) return
+    setEnviando(true)
+    setError('')
+    try {
+      const datos: DatosCheckout = {
+        ...(llenas.length > 0 && {
+          consumosMinibar: llenas.map((c) => ({
+            item: c.item.trim(),
+            ...(c.cantidad.trim() && { cantidad: Number(c.cantidad) }),
+            precio: aMoney(c.precio) as string,
+          })),
+          metodoPagoConsumos: metodo,
+        }),
+      }
+      const r = await realizarCheckout(reserva.orderId, datos)
+      const total = Number(r.consumosAdicionales) > 0 ? ` Consumos cargados: $${r.consumosAdicionales}.` : ''
+      onHecho(
+        `Check-out realizado: ${reserva.codigoReserva} quedó CHECKED_OUT y la clave digital fue revocada.${total} Si el alojamiento controla la limpieza, la habitación pasó a SUCIA y aparece en "Habitaciones y limpieza".`,
+      )
+    } catch (e) {
+      setError(mensajeDeError(e, 'No se pudo realizar el check-out.'))
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <DialogoConfirmacion
+      abierto
+      amplio
+      onAbiertoCambia={(abierto) => !abierto && !enviando && onCerrar()}
+      titulo="Check-out"
+      etiquetaConfirmar="Confirmar check-out"
+      etiquetaCancelar="Volver"
+      confirmando={enviando}
+      confirmarDeshabilitado={!valido}
+      onConfirmar={confirmar}
+    >
+      <ResumenReserva reserva={reserva} />
+      <ul className="mt-4 list-disc space-y-1 rounded-2xl bg-surface-muted py-3 pl-8 pr-4 text-sm text-ink">
+        <li>Recibe las llaves de la habitación {reserva.habitacionAsignada ?? reserva.habitacionNombre}.</li>
+        <li>El PIN digital de la reserva se revoca automáticamente al confirmar.</li>
+        <li>La habitación pasa a SUCIA (si el alojamiento controla la limpieza) y queda bloqueada para nuevos check-ins hasta marcarla como limpia.</li>
+      </ul>
+
+      <fieldset className="mt-4 flex flex-col gap-3">
+        <legend className="text-[13px] font-medium text-ink">Consumos adicionales de minibar (opcional)</legend>
+        {consumos.map((c, i) => (
+          <div key={i} className="grid grid-cols-[1fr_5rem_7rem_auto] items-start gap-2">
+            <CampoTexto etiqueta={i === 0 ? 'Producto' : 'Producto ' + (i + 1)} maxLength={80} value={c.item} onChange={(e) => cambiar(i, 'item', e.target.value)} />
+            <CampoTexto etiqueta="Cant." type="number" inputMode="numeric" min={1} max={100} value={c.cantidad} onChange={(e) => cambiar(i, 'cantidad', e.target.value)} />
+            <CampoTexto
+              etiqueta="Precio unit."
+              inputMode="decimal"
+              placeholder="3.50"
+              value={c.precio}
+              onChange={(e) => cambiar(i, 'precio', e.target.value)}
+              error={c.precio.trim() && aMoney(c.precio) === null ? 'Ej. 3.50' : undefined}
+            />
+            <button
+              type="button"
+              onClick={() => setConsumos((fs) => fs.filter((_, j) => j !== i))}
+              className="mt-7 text-xs font-semibold text-error underline"
+              aria-label={`Quitar consumo ${i + 1}`}
+            >
+              Quitar
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => setConsumos((fs) => [...fs, { item: '', cantidad: '', precio: '' }])}
+          disabled={consumos.length >= 50}
+          className="self-start text-sm font-semibold text-primary underline disabled:opacity-50"
+        >
+          + Agregar consumo
+        </button>
+        {llenas.length > 0 && (
+          <CampoSelect etiqueta="Cómo se paga" value={metodo} onChange={(e) => setMetodo(e.target.value as MetodoPagoConsumos)}>
+            {METODOS_PAGO.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.etiqueta}
+              </option>
+            ))}
+          </CampoSelect>
+        )}
+      </fieldset>
       <ErrorAccion texto={error} />
     </DialogoConfirmacion>
   )

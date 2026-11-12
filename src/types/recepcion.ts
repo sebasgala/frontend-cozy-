@@ -78,3 +78,34 @@ export interface RegistroAuditoriaRecepcion {
   datosNuevos: Record<string, unknown> | null
   creadoEn: string
 }
+
+/** Estado operativo interno de una habitación física (no es un OrdenStatus del contrato) */
+export type EstadoLimpieza = 'LIMPIA' | 'OCUPADA' | 'SUCIA' | 'EN_LIMPIEZA' | 'MANTENIMIENTO'
+
+/** GET /api/v1/admin/recepcion/habitaciones-fisicas */
+export interface HabitacionFisica {
+  id: string
+  alojamientoId: number
+  tipoHabitacionId: string
+  numero: string
+  estadoLimpieza: EstadoLimpieza
+  activa: boolean
+}
+
+export type MetodoPagoConsumos = 'TARJETA_REGISTRADA' | 'EFECTIVO' | 'CARGO_A_RESERVA'
+
+/** CheckOutRequestV2: solo estos campos viajan al backend */
+export interface DatosCheckout {
+  consumosMinibar?: { item: string; cantidad?: number; precio: string }[]
+  metodoPagoConsumos?: MetodoPagoConsumos
+}
+
+/** Respuesta de POST /api/v2/alojamientos/orders/{orderId}/checkout */
+export interface RespuestaCheckout {
+  orderId: string
+  estado: 'CHECKED_OUT'
+  habitacionLiberada: string
+  checkOutHora: string
+  consumosAdicionales: string
+  claveDigitalRevocada: boolean
+}

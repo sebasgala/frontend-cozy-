@@ -3,13 +3,17 @@
 import type {
   ContextoRecepcion,
   DatosCheckin,
+  DatosCheckout,
+  EstadoLimpieza,
   FiltroRecepcion,
+  HabitacionFisica,
   HabitacionReasignable,
   PaginaRecepcion,
   RegistroAuditoriaRecepcion,
+  RespuestaCheckout,
   ReservaRecepcion,
 } from '@/types/recepcion'
-import { graphqlFetch } from './api'
+import { apiFetch, graphqlFetch, obtenerDeviceFingerprint } from './api'
 
 const FRAGMENTO_RESERVA = `
   orderId
@@ -118,3 +122,27 @@ export const cambiarObservaciones = (orderId: string, datos: { observaciones: st
 /** Solo administrador del alojamiento o superadmin */
 export const autorizarEarlyCheckin = (orderId: string, datos: { desde?: string; motivo?: string }) =>
   mutar('autorizarEarlyCheckin', 'AutorizarEarlyCheckinInput', orderId, datos)
+
+// ───────────────────────── REST de reservas (vía gateway) ─────────────────────────
+
+const cabecerasRest = (): HeadersInit => ({ 'X-Device-Fingerprint': obtenerDeviceFingerprint() })
+
+/** POST /api/v2/alojamientos/orders/{orderId}/checkout: CHECKED_IN → CHECKED_OUT; revoca la clave digital y deja la habitación física SUCIA */
+export const realizarCheckout = (orderId: string, datos: DatosCheckout) =>
+  apiFetch<RespuestaCheckout>(`/api/v2/alojamientos/orders/${encodeURIComponent(orderId)}/checkout`, {
+    method: 'POST',
+    headers: cabecerasRest(),
+    body: JSON.stringify(datos),
+  })
+
+/** GET /api/v1/admin/recepcion/habitaciones-fisicas (del alojamiento del token) */
+export const listarHabitacionesFisicas = () =>
+  apiFetch<HabitacionFisica[]>('/api/v1/admin/recepcion/habitaciones-fisicas', { headers: cabecerasRest() })
+
+/** POST /api/v1/admin/recepcion/habitaciones-fisicas/{id}/limpieza: cambia el estado interno y deja historial; no toca la reserva */
+export const cambiarLimpieza = (id: string, estadoLimpieza: EstadoLimpieza, motivo?: string) =>
+  apiFetch<HabitacionFisica>(`/api/v1/admin/recepcion/habitaciones-fisicas/${encodeURIComponent(id)}/limpieza`, {
+    method: 'POST',
+    headers: cabecerasRest(),
+    body: JSON.stringify({ estadoLimpieza, ...(motivo?.trim() && { motivo: motivo.trim() }) }),
+  })

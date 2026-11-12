@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { CheckCircle2, Clock, History, LogIn, SlidersHorizontal, UserCheck, Users, BedDouble } from 'lucide-react'
+import { CheckCircle2, Clock, History, LogIn, LogOut, SlidersHorizontal, UserCheck, Users, BedDouble } from 'lucide-react'
 import { CampoSelect } from '@/components/admin/CampoSelect'
 import { ChipsPestanas } from '@/components/ChipsPestanas'
+import { HabitacionesLimpieza } from '@/components/recepcion/HabitacionesLimpieza'
 import {
   ModalAuditoria,
   ModalCheckin,
+  ModalCheckout,
   ModalEarlyCheckin,
   ModalEdicion,
   ModalReasignar,
@@ -28,10 +30,17 @@ const POR_PAGINA = 10
 // 'por_llegar': reservas confirmadas que aún no hicieron check-in y cuya estancia no terminó (vista por defecto)
 type FiltroEstado = 'por_llegar' | 'todas' | EstadoReserva
 type FiltroFechaModo = 'hoy' | 'todas' | 'personalizado'
+type Vista = 'reservas' | 'habitaciones'
 
+const VISTAS: { id: Vista; etiqueta: string }[] = [
+  { id: 'reservas', etiqueta: 'Reservas' },
+  { id: 'habitaciones', etiqueta: 'Habitaciones y limpieza' },
+]
+
+// Solo cambia la etiqueta: hacia el backend el estado sigue siendo CONFIRMED
 const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
-  CONFIRMED: { etiqueta: 'Confirmada', clase: 'bg-success/12 text-success' },
-  CHECKED_IN: { etiqueta: 'Alojado', clase: 'bg-primary/10 text-primary' },
+  CONFIRMED: { etiqueta: 'Confirmada (Pendiente de Check-in)', clase: 'bg-success/12 text-success' },
+  CHECKED_IN: { etiqueta: 'Alojada', clase: 'bg-primary/10 text-primary' },
   CHECKED_OUT: { etiqueta: 'Finalizada', clase: 'bg-[var(--dutch-white)] text-ink' },
   CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
   PENDING: { etiqueta: 'Reservada', clase: 'bg-warning/10 text-warning' },
@@ -52,6 +61,7 @@ type ModalActivo =
   | { tipo: 'reasignar'; reserva: ReservaRecepcion }
   | { tipo: 'edicion'; reserva: ReservaRecepcion }
   | { tipo: 'early'; reserva: ReservaRecepcion }
+  | { tipo: 'checkout'; reserva: ReservaRecepcion }
   | { tipo: 'auditoria'; reserva: ReservaRecepcion }
   | null
 
@@ -64,6 +74,7 @@ export default function RecepcionPage() {
   const { alojamientos, error: errorAlojamientos } = useAlojamientosAdmin()
   const [params, setParams] = useSearchParams()
 
+  const [vista, setVista] = useState<Vista>('reservas')
   const [contexto, setContexto] = useState<ContextoRecepcion | null>(null)
   const [estado, setEstado] = useState<FiltroEstado>('por_llegar')
   const [modoFecha, setModoFecha] = useState<FiltroFechaModo>('todas')
@@ -153,6 +164,12 @@ export default function RecepcionPage() {
     setVersion((v) => v + 1)
   }
 
+  const alCompletarCheckout = (mensajeAviso: string) => {
+    setModalActivo(null)
+    setAviso(mensajeAviso)
+    setVersion((v) => v + 1)
+  }
+
   const alojamientoActual = alojamientos?.find((a) => a.id === alojamientoSeleccionadoId)
   const tituloAlojamiento = esSuperadmin
     ? alojamientoActual
@@ -225,6 +242,14 @@ export default function RecepcionPage() {
         </div>
       )}
 
+      <div className="mb-6">
+        <ChipsPestanas<Vista> etiqueta="Sección de recepción" opciones={VISTAS} valor={vista} onCambiar={setVista} />
+      </div>
+
+      {vista === 'habitaciones' ? (
+        <HabitacionesLimpieza />
+      ) : (
+        <>
       {/* Barra de Filtros */}
       <section aria-label="Filtros de recepción" className="mb-6 flex flex-col gap-4 rounded-[20px] border border-border bg-white p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -338,7 +363,9 @@ export default function RecepcionPage() {
             {resultado.data.map((reserva) => {
               const ventana = ventanaCheckin(reserva)
               const puedeCheckin = reserva.estado === 'CONFIRMED'
-              const puedeReasignar = reserva.estado === 'CONFIRMED' || reserva.estado === 'CHECKED_IN'
+              // Huéspedes y habitación solo se editan en CONFIRMED; en CHECKED_IN, CHECKED_OUT y CANCELLED el backend responde 409
+              const puedeEditar = reserva.estado === 'CONFIRMED'
+              const puedeCheckout = reserva.estado === 'CHECKED_IN'
               const estadoBadge = ESTADOS[reserva.estado] ?? { etiqueta: reserva.estado, clase: 'bg-surface-muted text-ink' }
 
               return (
@@ -430,11 +457,18 @@ export default function RecepcionPage() {
                         className="gap-1.5"
                       >
                         <LogIn aria-hidden="true" className="size-4" />
-                        Check-in
+                        Aprobar Check-in
                       </Button>
                     )}
 
-                    {puedeReasignar && (
+                    {puedeCheckout && (
+                      <Button type="button" size="sm" onClick={() => setModalActivo({ tipo: 'checkout', reserva })} className="gap-1.5">
+                        <LogOut aria-hidden="true" className="size-4" />
+                        Realizar Check-out
+                      </Button>
+                    )}
+
+                    {puedeEditar && (
                       <Button
                         type="button"
                         variant="outline"
@@ -447,16 +481,18 @@ export default function RecepcionPage() {
                       </Button>
                     )}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setModalActivo({ tipo: 'edicion', reserva })}
-                      className="gap-1.5"
-                    >
-                      <Users aria-hidden="true" className="size-4" />
-                      Huéspedes
-                    </Button>
+                    {puedeEditar && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setModalActivo({ tipo: 'edicion', reserva })}
+                        className="gap-1.5"
+                      >
+                        <Users aria-hidden="true" className="size-4" />
+                        Huéspedes
+                      </Button>
+                    )}
 
                     {esAdminOSuper && puedeCheckin && !reserva.earlyCheckin.autorizado && (
                       <Button
@@ -516,6 +552,8 @@ export default function RecepcionPage() {
           </div>
         )}
       </section>
+        </>
+      )}
 
       {/* Modales */}
       {modalActivo?.tipo === 'checkin' && (
@@ -548,6 +586,10 @@ export default function RecepcionPage() {
           onCerrar={() => setModalActivo(null)}
           onHecho={alCompletarModal}
         />
+      )}
+
+      {modalActivo?.tipo === 'checkout' && (
+        <ModalCheckout reserva={modalActivo.reserva} onCerrar={() => setModalActivo(null)} onHecho={alCompletarCheckout} />
       )}
 
       {modalActivo?.tipo === 'auditoria' && (
