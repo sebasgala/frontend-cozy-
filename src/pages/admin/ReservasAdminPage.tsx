@@ -20,11 +20,11 @@ type FiltroEstado = 'todas' | EstadoReserva
 type Resultado = { clave: string; datos: Pagina<ReservaAdmin> } | { clave: string; error: string }
 
 const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
+  PENDING: { etiqueta: 'Reservada', clase: 'bg-[var(--dutch-white)] text-ink' },
   CONFIRMED: { etiqueta: 'Confirmada', clase: 'bg-success/12 text-success' },
-  CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
-  PENDING: { etiqueta: 'Pendiente', clase: 'bg-[var(--dutch-white)] text-ink' },
-  CHECKED_IN: { etiqueta: 'Alojado', clase: 'bg-success/12 text-success' },
+  CHECKED_IN: { etiqueta: 'Alojada', clase: 'bg-success/12 text-success' },
   CHECKED_OUT: { etiqueta: 'Finalizada', clase: 'bg-[var(--dutch-white)] text-ink' },
+  CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
 }
 
 const nombreHuesped = (r: ReservaAdmin) => `${r.customer_details.first_name} ${r.customer_details.last_name}`.trim()
@@ -128,8 +128,11 @@ export default function ReservasAdminPage() {
           }}
           opciones={[
             { id: 'todas', etiqueta: 'Todas' },
-            { id: 'CONFIRMED', etiqueta: 'Confirmadas' },
-            { id: 'CANCELLED', etiqueta: 'Canceladas' },
+            { id: 'PENDING', etiqueta: 'Reservada' },
+            { id: 'CONFIRMED', etiqueta: 'Confirmada' },
+            { id: 'CHECKED_IN', etiqueta: 'Alojada' },
+            { id: 'CHECKED_OUT', etiqueta: 'Finalizada' },
+            { id: 'CANCELLED', etiqueta: 'Cancelada' },
           ]}
         />
         {alojamientos && alojamientos.length > 0 && (
@@ -202,7 +205,7 @@ export default function ReservasAdminPage() {
                   </div>
                   <div className="flex flex-row items-center justify-between gap-3 lg:flex-col lg:items-end">
                     <p className="font-heading text-xl font-medium text-ink">{formatearPrecio(r.total_price, r.currency)}</p>
-                    {r.status === 'CONFIRMED' ? (
+                    {(r.status === 'CONFIRMED' || r.status === 'PENDING') ? (
                       <Button
                         size="sm"
                         variant="outline"
