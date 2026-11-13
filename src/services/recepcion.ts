@@ -29,7 +29,7 @@ const FRAGMENTO_RESERVA = `
   salida
   noches
   habitaciones
-  titular { nombre email tipoDocumento documentoRegistrado }
+  titular { nombre email tipoDocumento identificacion documentoRegistrado }
   huespedes { adultos ninos }
   observaciones
   earlyCheckin { autorizado desde }

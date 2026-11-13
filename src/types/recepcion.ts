@@ -28,6 +28,7 @@ export interface ReservaRecepcion {
     nombre: string
     email: string
     tipoDocumento: string | null
+    identificacion?: string | null
     /** false en reservas sin documento registrado: el documento presentado no se puede contrastar */
     documentoRegistrado: boolean
   }

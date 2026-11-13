@@ -106,7 +106,7 @@ function ErrorAccion({ texto }: { texto: string }) {
 // ───────────────────────── R7: check-in en mostrador ─────────────────────────
 
 export function ModalCheckin({ reserva, onCerrar, onHecho }: PropsModal) {
-  const [documento, setDocumento] = useState('')
+  const [documento, setDocumento] = useState(reserva.titular.identificacion ?? '')
   const [presentes, setPresentes] = useState(String(reserva.huespedes.adultos + reserva.huespedes.ninos.length))
   const [codigo, setCodigo] = useState(leerCodigoGuardado)
   const [observaciones, setObservaciones] = useState('')
