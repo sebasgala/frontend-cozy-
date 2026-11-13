@@ -74,11 +74,27 @@ function CampoArea({ etiqueta, ayuda, className, ...props }: Omit<ComponentProps
 }
 
 function ResumenReserva({ reserva }: { reserva: ReservaRecepcion }) {
+  const { adultos, ninos } = reserva.huespedes
+  const cantidadNinos = Array.isArray(ninos) ? ninos.length : Number(ninos || 0)
+  const textoPersonas = [
+    `${adultos} ${adultos === 1 ? 'adulto' : 'adultos'}`,
+    cantidadNinos > 0 ? `${cantidadNinos} ${cantidadNinos === 1 ? 'niño' : 'niños'}` : null,
+  ]
+    .filter(Boolean)
+    .join(', ')
+  const documento = reserva.titular.identificacion
+    ? reserva.titular.tipoDocumento
+      ? `${reserva.titular.tipoDocumento}: ${reserva.titular.identificacion}`
+      : reserva.titular.identificacion
+    : 'No registrado'
   const filas: [string, string][] = [
     ['Titular', reserva.titular.nombre || 'Sin nombre'],
+    ['Documento', documento],
     ['Correo', reserva.titular.email],
     ['Alojamiento', reserva.alojamientoNombre],
     ['Habitación', reserva.habitacionAsignada ? `${reserva.habitacionAsignada} (${reserva.habitacionNombre})` : reserva.habitacionNombre],
+    ['Habitaciones', `${reserva.habitaciones} ${reserva.habitaciones === 1 ? 'habitación' : 'habitaciones'}`],
+    ['Personas', textoPersonas],
     ['Estancia', `${formatearFecha(reserva.llegada)} → ${formatearFecha(reserva.salida)} · ${formatearNoches(reserva.noches)}`],
     ['Reserva', reserva.codigoReserva],
   ]
