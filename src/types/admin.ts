@@ -160,7 +160,7 @@ export interface EdicionDisponibilidad {
 }
 
 /** Estado de una reserva (ordenes.status en el backend) */
-export type EstadoReserva = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'CHECKED_IN' | 'CHECKED_OUT'
+export type EstadoReserva = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'CHECKED_IN' | 'CHECKED_OUT' | 'POR_LIMPIAR' | 'LIMPIA_LISTA'
 
 /** Quién reservó: viene en la lista de administración (no en la cuenta del cliente) */
 export interface ClienteReserva {

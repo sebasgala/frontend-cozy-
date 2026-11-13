@@ -14,8 +14,12 @@ const ESTADOS: Record<EstadoLimpieza, { etiqueta: string; clase: string }> = {
   MANTENIMIENTO: { etiqueta: 'Mantenimiento', clase: 'bg-[var(--dutch-white)] text-ink' },
 }
 
+interface HabitacionesLimpiezaProps {
+  alojamientoId?: number
+}
+
 /** Habitaciones físicas del alojamiento y su limpieza (SUCIA → LIMPIA). No cambia el estado de ninguna reserva. */
-export function HabitacionesLimpieza() {
+export function HabitacionesLimpieza({ alojamientoId }: HabitacionesLimpiezaProps = {}) {
   const [habitaciones, setHabitaciones] = useState<HabitacionFisica[] | null>(null)
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
@@ -23,7 +27,7 @@ export function HabitacionesLimpieza() {
 
   const cargar = useCallback(async () => {
     try {
-      setHabitaciones(await listarHabitacionesFisicas())
+      setHabitaciones(await listarHabitacionesFisicas(alojamientoId))
       setError('')
     } catch (e) {
       if (esErrorDeSesion(e)) {
@@ -33,7 +37,7 @@ export function HabitacionesLimpieza() {
       setHabitaciones((h) => h ?? [])
       setError(mensajeDeError(e, 'No se pudieron cargar las habitaciones.'))
     }
-  }, [])
+  }, [alojamientoId])
 
   useEffect(() => {
     void cargar()

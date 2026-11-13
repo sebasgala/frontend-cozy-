@@ -11,7 +11,7 @@ export const PLANES_COMIDA: Record<string, string> = {
 
 export const TIPOS_CANCELACION: Record<string, string> = {
   free_cancellation: 'Cancelación gratuita',
-  partially_refundable: 'Reembolso parcial',
+  partially_refundable: 'No reembolsable',
   non_refundable: 'No reembolsable',
 }
 

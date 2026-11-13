@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { CheckCircle2, Clock, History, LogIn, LogOut, SlidersHorizontal, UserCheck, Users, BedDouble } from 'lucide-react'
+import { Archive, CheckCircle2, Clock, History, LogIn, LogOut, SlidersHorizontal, Sparkles, UserCheck, Users, BedDouble } from 'lucide-react'
 import { CampoSelect } from '@/components/admin/CampoSelect'
 import { ChipsPestanas } from '@/components/ChipsPestanas'
 import { HabitacionesLimpieza } from '@/components/recepcion/HabitacionesLimpieza'
@@ -10,6 +10,7 @@ import {
   ModalCheckout,
   ModalEarlyCheckin,
   ModalEdicion,
+  ModalMarcarLimpia,
   ModalReasignar,
 } from '@/components/recepcion/ModalesRecepcion'
 import { Button } from '@/components/ui/button'
@@ -20,7 +21,7 @@ import { horaGuayaquil, hoyGuayaquil, ventanaCheckin } from '@/lib/recepcion'
 import { cn } from '@/lib/utils'
 import { esErrorDeSesion, mensajeDeError } from '@/services/admin'
 import { cerrarSesion } from '@/services/cuenta'
-import { listarReservasRecepcion, obtenerContextoRecepcion } from '@/services/recepcion'
+import { archivarReservaRecepcion, listarReservasRecepcion, obtenerContextoRecepcion } from '@/services/recepcion'
 import type { EstadoReserva } from '@/types/admin'
 import type { ContextoRecepcion, PaginaRecepcion, ReservaRecepcion } from '@/types/recepcion'
 import { EncabezadoAdmin } from './EncabezadoAdmin'
@@ -37,22 +38,22 @@ const VISTAS: { id: Vista; etiqueta: string }[] = [
   { id: 'habitaciones', etiqueta: 'Habitaciones y limpieza' },
 ]
 
-// Solo cambia la etiqueta: hacia el backend el estado sigue siendo CONFIRMED
+// Configuración visual por estado de reserva en recepción
 const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
-  CONFIRMED: { etiqueta: 'Confirmada (Pendiente de Check-in)', clase: 'bg-success/12 text-success' },
-  CHECKED_IN: { etiqueta: 'Alojada', clase: 'bg-primary/10 text-primary' },
+  CONFIRMED: { etiqueta: 'Confirmada (Por llegar)', clase: 'bg-success/12 text-success' },
+  CHECKED_IN: { etiqueta: 'En estancia', clase: 'bg-primary/10 text-primary' },
   CHECKED_OUT: { etiqueta: 'Finalizada', clase: 'bg-[var(--dutch-white)] text-ink' },
   CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
   PENDING: { etiqueta: 'Reservada', clase: 'bg-warning/10 text-warning' },
+  POR_LIMPIAR: { etiqueta: 'Por limpiar', clase: 'bg-amber-500/15 text-amber-700 font-semibold border border-amber-500/30' },
+  LIMPIA_LISTA: { etiqueta: 'Limpia lista', clase: 'bg-success/10 text-success' },
 }
 
 const OPCIONES_ESTADO: { id: FiltroEstado; etiqueta: string }[] = [
+  { id: 'todas', etiqueta: 'Todas activas' },
   { id: 'por_llegar', etiqueta: 'Por llegar' },
-  { id: 'todas', etiqueta: 'Todas' },
-  { id: 'PENDING', etiqueta: 'Reservadas' },
-  { id: 'CONFIRMED', etiqueta: 'Confirmadas' },
-  { id: 'CHECKED_IN', etiqueta: 'Alojados' },
-  { id: 'CHECKED_OUT', etiqueta: 'Finalizadas' },
+  { id: 'CHECKED_IN', etiqueta: 'En estancia' },
+  { id: 'POR_LIMPIAR', etiqueta: 'Por limpiar' },
   { id: 'CANCELLED', etiqueta: 'Canceladas' },
 ]
 
@@ -62,6 +63,7 @@ type ModalActivo =
   | { tipo: 'edicion'; reserva: ReservaRecepcion }
   | { tipo: 'early'; reserva: ReservaRecepcion }
   | { tipo: 'checkout'; reserva: ReservaRecepcion }
+  | { tipo: 'limpieza'; reserva: ReservaRecepcion }
   | { tipo: 'auditoria'; reserva: ReservaRecepcion }
   | null
 
@@ -76,7 +78,7 @@ export default function RecepcionPage() {
 
   const [vista, setVista] = useState<Vista>('reservas')
   const [contexto, setContexto] = useState<ContextoRecepcion | null>(null)
-  const [estado, setEstado] = useState<FiltroEstado>('por_llegar')
+  const [estado, setEstado] = useState<FiltroEstado>('todas')
   const [modoFecha, setModoFecha] = useState<FiltroFechaModo>('todas')
   const [llegadaDesde, setLlegadaDesde] = useState(hoyGuayaquil())
   const [llegadaHasta, setLlegadaHasta] = useState(hoyGuayaquil())
@@ -118,8 +120,9 @@ export default function RecepcionPage() {
     let vigente = true
 
     listarReservasRecepcion({
-      pendientesCheckin: estado === 'por_llegar',
+      pendientesCheckin: estado === 'por_llegar' ? true : undefined,
       estado: estado === 'todas' || estado === 'por_llegar' ? undefined : estado,
+      archivadaRecepcion: false,
       llegadaDesde: desde || undefined,
       llegadaHasta: hasta || undefined,
       alojamientoId: alojamientoSeleccionadoId,
@@ -153,6 +156,20 @@ export default function RecepcionPage() {
     setAviso(mensajeAviso)
     setEstadoCarga((prev) => {
       if (!prev || !('datos' in prev)) return prev
+      // Si la reserva quedó limpia lista o archivada, se retira del mostrador de recepción activo
+      if (reservaActualizada.estado === 'LIMPIA_LISTA' || reservaActualizada.archivadaRecepcion) {
+        return {
+          ...prev,
+          datos: {
+            ...prev.datos,
+            data: prev.datos.data.filter((r) => r.orderId !== reservaActualizada.orderId),
+            meta: {
+              ...prev.datos.meta,
+              totalItems: Math.max(0, prev.datos.meta.totalItems - 1),
+            },
+          },
+        }
+      }
       return {
         ...prev,
         datos: {
@@ -168,6 +185,34 @@ export default function RecepcionPage() {
     setModalActivo(null)
     setAviso(mensajeAviso)
     setVersion((v) => v + 1)
+  }
+
+  const manejarArchivar = async (reserva: ReservaRecepcion) => {
+    try {
+      await archivarReservaRecepcion(reserva.orderId)
+      setAviso(`Reserva ${reserva.codigoReserva} archivada y retirada del mostrador de recepción.`)
+      setEstadoCarga((prev) => {
+        if (!prev || !('datos' in prev)) return prev
+        return {
+          ...prev,
+          datos: {
+            ...prev.datos,
+            data: prev.datos.data.filter((r) => r.orderId !== reserva.orderId),
+            meta: {
+              ...prev.datos.meta,
+              totalItems: Math.max(0, prev.datos.meta.totalItems - 1),
+            },
+          },
+        }
+      })
+      setVersion((v) => v + 1)
+    } catch (e: unknown) {
+      setAviso('')
+      setEstadoCarga((prev) => {
+        if (!prev) return null
+        return { ...prev, error: mensajeDeError(e, 'No se pudo archivar la reserva.') }
+      })
+    }
   }
 
   const alojamientoActual = alojamientos?.find((a) => a.id === alojamientoSeleccionadoId)
@@ -247,7 +292,7 @@ export default function RecepcionPage() {
       </div>
 
       {vista === 'habitaciones' ? (
-        <HabitacionesLimpieza />
+        <HabitacionesLimpieza alojamientoId={alojamientoSeleccionadoId} />
       ) : (
         <>
       {/* Barra de Filtros */}
@@ -366,6 +411,8 @@ export default function RecepcionPage() {
               // Huéspedes y habitación solo se editan en CONFIRMED; en CHECKED_IN, CHECKED_OUT y CANCELLED el backend responde 409
               const puedeEditar = reserva.estado === 'CONFIRMED'
               const puedeCheckout = reserva.estado === 'CHECKED_IN'
+              const esPorLimpiar = reserva.estado === 'POR_LIMPIAR'
+              const esCancelada = reserva.estado === 'CANCELLED'
               const estadoBadge = ESTADOS[reserva.estado] ?? { etiqueta: reserva.estado, clase: 'bg-surface-muted text-ink' }
 
               return (
@@ -443,6 +490,19 @@ export default function RecepcionPage() {
                         <span className="font-medium">Observaciones:</span> {reserva.observaciones}
                       </p>
                     )}
+
+                    {esPorLimpiar && (
+                      <div className="flex items-center gap-2 rounded-xl bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-800">
+                        <Sparkles aria-hidden="true" className="size-3.5 shrink-0 text-amber-600" />
+                        <span>Habitación en proceso de limpieza. Requiere confirmación para volver a quedar disponible en inventario.</span>
+                      </div>
+                    )}
+
+                    {esCancelada && (
+                      <div className="flex items-center gap-2 rounded-xl bg-error/10 px-3 py-1.5 text-xs font-medium text-error">
+                        <span>Reserva cancelada · Tarifa no reembolsable. Archivar para retirarla del mostrador.</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Acciones */}
@@ -466,6 +526,36 @@ export default function RecepcionPage() {
                         <LogOut aria-hidden="true" className="size-4" />
                         Realizar Check-out
                       </Button>
+                    )}
+
+                    {esPorLimpiar && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => setModalActivo({ tipo: 'limpieza', reserva })}
+                        className="gap-1.5 bg-amber-600 text-white hover:bg-amber-700 focus-visible:outline-amber-600"
+                      >
+                        <Sparkles aria-hidden="true" className="size-4" />
+                        Marcar Limpia y Lista
+                      </Button>
+                    )}
+
+                    {esCancelada && (
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-error/10 px-2.5 py-1 text-xs font-semibold text-error">
+                          Tarifa no reembolsable
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => void manejarArchivar(reserva)}
+                          className="gap-1.5 border-error/30 text-error hover:bg-error/10"
+                        >
+                          <Archive aria-hidden="true" className="size-4" />
+                          Archivar
+                        </Button>
+                      </div>
                     )}
 
                     {puedeEditar && (
@@ -590,6 +680,14 @@ export default function RecepcionPage() {
 
       {modalActivo?.tipo === 'checkout' && (
         <ModalCheckout reserva={modalActivo.reserva} onCerrar={() => setModalActivo(null)} onHecho={alCompletarCheckout} />
+      )}
+
+      {modalActivo?.tipo === 'limpieza' && (
+        <ModalMarcarLimpia
+          reserva={modalActivo.reserva}
+          onCerrar={() => setModalActivo(null)}
+          onHecho={alCompletarModal}
+        />
       )}
 
       {modalActivo?.tipo === 'auditoria' && (

@@ -10,6 +10,7 @@ import {
   cambiarObservaciones,
   listarAuditoriaRecepcion,
   listarHabitacionesReasignables,
+  marcarLimpiezaLista,
   realizarCheckout,
   reasignarHabitacion,
 } from '@/services/recepcion'
@@ -482,7 +483,7 @@ export function ModalCheckout({ reserva, onCerrar, onHecho }: { reserva: Reserva
       const r = await realizarCheckout(reserva.orderId, datos)
       const total = Number(r.consumosAdicionales) > 0 ? ` Consumos cargados: $${r.consumosAdicionales}.` : ''
       onHecho(
-        `Check-out realizado: ${reserva.codigoReserva} quedó CHECKED_OUT y la clave digital fue revocada.${total} Si el alojamiento controla la limpieza, la habitación pasó a SUCIA y aparece en "Habitaciones y limpieza".`,
+        `Check-out realizado: ${reserva.codigoReserva} pasó a estado "Por Limpiar". La habitación permanecerá bloqueada en el inventario hasta que sea marcada como Limpia y Lista.${total}`,
       )
     } catch (e) {
       setError(mensajeDeError(e, 'No se pudo realizar el check-out.'))
@@ -507,7 +508,7 @@ export function ModalCheckout({ reserva, onCerrar, onHecho }: { reserva: Reserva
       <ul className="mt-4 list-disc space-y-1 rounded-2xl bg-surface-muted py-3 pl-8 pr-4 text-sm text-ink">
         <li>Recibe las llaves de la habitación {reserva.habitacionAsignada ?? reserva.habitacionNombre}.</li>
         <li>El PIN digital de la reserva se revoca automáticamente al confirmar.</li>
-        <li>La habitación pasa a SUCIA (si el alojamiento controla la limpieza) y queda bloqueada para nuevos check-ins hasta marcarla como limpia.</li>
+        <li>La reserva y habitación pasan automáticamente a estado <strong>Por Limpiar</strong> y permanecerán bloqueadas en inventario hasta marcarla como Limpia y Lista.</li>
       </ul>
 
       <fieldset className="mt-4 flex flex-col gap-3">
@@ -612,6 +613,57 @@ export function ModalAuditoria({ reserva, onCerrar }: { reserva: ReservaRecepcio
             ))}
           </ul>
         )}
+      </div>
+      <ErrorAccion texto={error} />
+    </DialogoConfirmacion>
+  )
+}
+
+// ───────────────────────── Marcar limpia y lista ─────────────────────────
+
+export function ModalMarcarLimpia({ reserva, onCerrar, onHecho }: PropsModal) {
+  const [notas, setNotas] = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState('')
+
+  const confirmar = async () => {
+    setEnviando(true)
+    setError('')
+    try {
+      const r = await marcarLimpiezaLista(reserva.orderId, notas)
+      onHecho(
+        r,
+        `Habitación de la reserva ${reserva.codigoReserva} marcada como Limpia y Lista. La habitación queda disponible y se libera de recepción.`,
+      )
+    } catch (e: unknown) {
+      setError(mensajeDeError(e, 'No se pudo marcar la habitación como limpia y lista.'))
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <DialogoConfirmacion
+      abierto
+      onAbiertoCambia={(abierto) => !abierto && !enviando && onCerrar()}
+      titulo="Marcar Limpia y Lista"
+      etiquetaConfirmar="Confirmar Limpia y Lista"
+      etiquetaCancelar="Volver"
+      confirmando={enviando}
+      onConfirmar={confirmar}
+    >
+      <p className="mb-4 text-sm text-muted-foreground">
+        Confirma que la habitación ha sido limpiada e inspeccionada. La habitación quedará inmediatamente disponible para futuras reservas y se liberará del mostrador de recepción.
+      </p>
+      <ResumenReserva reserva={reserva} />
+      <div className="mt-4 flex flex-col gap-4">
+        <CampoArea
+          etiqueta="Notas de limpieza (opcional)"
+          maxLength={300}
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          placeholder="Ej: Ropa de cama cambiada, baño desinfectado y amenities repuestos."
+        />
       </div>
       <ErrorAccion texto={error} />
     </DialogoConfirmacion>

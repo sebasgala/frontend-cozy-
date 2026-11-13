@@ -39,14 +39,17 @@ export interface ReservaRecepcion {
   /** Primer instante (ISO) en que ya no se puede aprobar el check-in */
   checkinCierraEn: string
   checkInEn: string | null
+  /** true si la reserva fue archivada y retirada del mostrador de recepción */
+  archivadaRecepcion?: boolean
 }
 
 export type PaginaRecepcion = Pagina<ReservaRecepcion>
 
 export interface FiltroRecepcion {
-  /** CONFIRMED sin check-in con la estancia vigente (vista por defecto del mostrador) */
+  /** CONFIRMED sin check-in con la estancia vigente */
   pendientesCheckin?: boolean
   estado?: EstadoReserva
+  archivadaRecepcion?: boolean
   llegadaDesde?: string
   llegadaHasta?: string
   alojamientoId?: number

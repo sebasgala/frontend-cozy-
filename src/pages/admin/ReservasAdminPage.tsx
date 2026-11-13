@@ -25,6 +25,8 @@ const ESTADOS: Record<EstadoReserva, { etiqueta: string; clase: string }> = {
   CHECKED_IN: { etiqueta: 'Alojada', clase: 'bg-success/12 text-success' },
   CHECKED_OUT: { etiqueta: 'Finalizada', clase: 'bg-[var(--dutch-white)] text-ink' },
   CANCELLED: { etiqueta: 'Cancelada', clase: 'bg-error/10 text-error' },
+  POR_LIMPIAR: { etiqueta: 'Por limpiar', clase: 'bg-warning/15 text-warning' },
+  LIMPIA_LISTA: { etiqueta: 'Limpia lista', clase: 'bg-success/10 text-success' },
 }
 
 const nombreHuesped = (r: ReservaAdmin) => `${r.customer_details.first_name} ${r.customer_details.last_name}`.trim()

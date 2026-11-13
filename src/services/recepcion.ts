@@ -36,6 +36,7 @@ const FRAGMENTO_RESERVA = `
   checkinHabilitadoDesde
   checkinCierraEn
   checkInEn
+  archivadaRecepcion
 `
 
 export async function obtenerContextoRecepcion(): Promise<ContextoRecepcion> {
@@ -61,6 +62,7 @@ export async function listarReservasRecepcion(filtro: FiltroRecepcion = {}): Pro
       filtro: {
         ...(filtro.pendientesCheckin && { pendientesCheckin: true }),
         ...(filtro.estado && { estado: filtro.estado }),
+        ...(filtro.archivadaRecepcion !== undefined && { archivadaRecepcion: filtro.archivadaRecepcion }),
         ...(filtro.llegadaDesde && { llegadaDesde: filtro.llegadaDesde }),
         ...(filtro.llegadaHasta && { llegadaHasta: filtro.llegadaHasta }),
         ...(filtro.alojamientoId != null && { alojamientoId: filtro.alojamientoId }),
@@ -123,6 +125,34 @@ export const cambiarObservaciones = (orderId: string, datos: { observaciones: st
 export const autorizarEarlyCheckin = (orderId: string, datos: { desde?: string; motivo?: string }) =>
   mutar('autorizarEarlyCheckin', 'AutorizarEarlyCheckinInput', orderId, datos)
 
+export async function marcarLimpiezaLista(reservaId: string, notas?: string): Promise<ReservaRecepcion> {
+  const r = await graphqlFetch<{ marcarLimpiezaLista: ReservaRecepcion }>(
+    `
+    mutation MarcarLimpiezaLista($reservaId: ID!, $notas: String) {
+      marcarLimpiezaLista(reservaId: $reservaId, notas: $notas) {
+        ${FRAGMENTO_RESERVA}
+      }
+    }
+  `,
+    { reservaId, notas: notas?.trim() || undefined },
+  )
+  return r.marcarLimpiezaLista
+}
+
+export async function archivarReservaRecepcion(reservaId: string): Promise<ReservaRecepcion> {
+  const r = await graphqlFetch<{ archivarReservaRecepcion: ReservaRecepcion }>(
+    `
+    mutation ArchivarReservaRecepcion($reservaId: ID!) {
+      archivarReservaRecepcion(reservaId: $reservaId) {
+        ${FRAGMENTO_RESERVA}
+      }
+    }
+  `,
+    { reservaId },
+  )
+  return r.archivarReservaRecepcion
+}
+
 // ───────────────────────── REST de reservas (vía gateway) ─────────────────────────
 
 const cabecerasRest = (): HeadersInit => ({ 'X-Device-Fingerprint': obtenerDeviceFingerprint() })
@@ -135,9 +165,11 @@ export const realizarCheckout = (orderId: string, datos: DatosCheckout) =>
     body: JSON.stringify(datos),
   })
 
-/** GET /api/v1/admin/recepcion/habitaciones-fisicas (del alojamiento del token) */
-export const listarHabitacionesFisicas = () =>
-  apiFetch<HabitacionFisica[]>('/api/v1/admin/recepcion/habitaciones-fisicas', { headers: cabecerasRest() })
+/** GET /api/v1/admin/recepcion/habitaciones-fisicas (del alojamiento del token o del id seleccionado) */
+export const listarHabitacionesFisicas = (alojamientoId?: number) => {
+  const query = alojamientoId ? `?alojamientoId=${encodeURIComponent(alojamientoId)}` : ''
+  return apiFetch<HabitacionFisica[]>(`/api/v1/admin/recepcion/habitaciones-fisicas${query}`, { headers: cabecerasRest() })
+}
 
 /** POST /api/v1/admin/recepcion/habitaciones-fisicas/{id}/limpieza: cambia el estado interno y deja historial; no toca la reserva */
 export const cambiarLimpieza = (id: string, estadoLimpieza: EstadoLimpieza, motivo?: string) =>
