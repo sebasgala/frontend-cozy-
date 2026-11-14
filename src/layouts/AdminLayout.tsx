@@ -35,7 +35,7 @@ const PRINCIPAL: EnlaceAdmin[] = [
   { etiqueta: 'Recepción', ruta: '/admin/recepcion', icono: ConciergeBell, roles: ['recepcion', 'administrador', 'superadmin'] },
   { etiqueta: 'Alojamientos', ruta: '/admin/alojamientos', icono: House, roles: ['administrador', 'superadmin'] },
   { etiqueta: 'Habitaciones', ruta: '/admin/habitaciones', icono: BedDouble, roles: ['administrador', 'superadmin'] },
-  { etiqueta: 'Disponibilidad', ruta: '/admin/disponibilidad', icono: CalendarDays, roles: ['administrador', 'superadmin'] },
+  { etiqueta: 'Disponibilidad', ruta: '/admin/disponibilidad', icono: CalendarDays, roles: ['recepcion', 'administrador', 'superadmin'] },
   { etiqueta: 'Reservas', ruta: '/admin/reservas', icono: ReceiptText, roles: ['administrador', 'superadmin'] },
   { etiqueta: 'Ciudades', ruta: '/admin/ciudades', icono: MapPin, roles: ['administrador', 'superadmin'] },
   { etiqueta: 'Mi cuenta', ruta: '/admin/cuenta', icono: UserRound },

@@ -183,7 +183,8 @@ export default function HabitacionesPage() {
                     <div className="min-w-0">
                       <p className="truncate font-medium text-ink">{h.nombre}</p>
                       <p className="text-sm text-muted-foreground">
-                        {h.tipo} · {h.capacidadAdultos} {h.capacidadAdultos === 1 ? 'adulto' : 'adultos'}
+                        {h.tipo}
+                        {h.camas && ` · ${h.camas}`} · {h.capacidadAdultos} {h.capacidadAdultos === 1 ? 'adulto' : 'adultos'}
                         {h.capacidadNinos > 0 && ` y ${h.capacidadNinos} ${h.capacidadNinos === 1 ? 'niño' : 'niños'}`} · desde {formatearPrecio(h.precioBase, moneda)}
                       </p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">

@@ -24,7 +24,22 @@ export interface UsuarioAdmin {
   apellido: string
   rol: RolUsuario
   estado: EstadoUsuario
+  alojamientoId?: number | null
+  requiereCambioClave?: boolean
   createdAt: string
+}
+
+export interface CuentaCreadaAdmin extends UsuarioAdmin {
+  claveTemporal?: string | null
+}
+
+export interface DatosNuevoUsuarioAdmin {
+  email: string
+  nombre: string
+  apellido: string
+  password?: string
+  rol: RolUsuario
+  alojamientoId?: number | null
 }
 
 /** Errores de un formulario por nombre de campo, a partir de invalidParams */
@@ -99,6 +114,7 @@ export interface HabitacionAdmin {
   capacidadNinos: number
   /** Precio de catálogo; el precio real de cada noche está en la disponibilidad */
   precioBase: number
+  camas?: string | null
   mealPlan: string | null
   cancellationType: string | null
   /** false = desactivada: no se vende, pero sus reservas siguen vigentes */
@@ -112,6 +128,7 @@ export interface DatosHabitacion {
   capacidadAdultos: number
   capacidadNinos: number
   precioBase: number
+  camas?: string | null
   mealPlan?: string | null
   cancellationType?: string | null
 }

@@ -135,7 +135,7 @@ export const router = createBrowserRouter([
           {
             path: 'disponibilidad',
             element: (
-              <RequiereRol roles={['administrador', 'superadmin']}>
+              <RequiereRol roles={['recepcion', 'administrador', 'superadmin']}>
                 <DisponibilidadPage />
               </RequiereRol>
             ),

@@ -4,6 +4,7 @@ import { CampoSelect } from '@/components/admin/CampoSelect'
 import { CampoTexto } from '@/components/CampoTexto'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { useAlojamientosAdmin } from '@/hooks/useAlojamientosAdmin'
+import { useSesion } from '@/hooks/useSesion'
 import { ApiError } from '@/services/api'
 import { erroresPorCampo, esErrorDeSesion, mensajeDeError } from '@/services/admin'
 import { cerrarSesion } from '@/services/cuenta'
@@ -56,6 +57,8 @@ function motivoConflicto(fecha: string, razon: string): string {
  */
 export default function DisponibilidadPage() {
   const hoy = hoyIso()
+  const sesion = useSesion()
+  const soloLectura = sesion?.rol === 'recepcion'
   const { alojamientos, error: errorAlojamientos } = useAlojamientosAdmin()
   const [params, setParams] = useSearchParams()
 
@@ -389,14 +392,16 @@ export default function DisponibilidadPage() {
                       })}
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">
-                      Cada día muestra el precio y los cupos libres de los totales. «—» = sin cupos cargados (no se vende). Toca un día para editarlo;
-                      con Mayús, extiende el rango hasta ese día.
+                      {soloLectura
+                        ? 'Cada día muestra el precio y los cupos libres de los totales. «—» = sin cupos cargados (no se vende). Vista de solo lectura para recepción.'
+                        : 'Cada día muestra el precio y los cupos libres de los totales. «—» = sin cupos cargados (no se vende). Toca un día para editarlo; con Mayús, extiende el rango hasta ese día.'}
                     </p>
                   </>
                 )}
               </section>
 
               {/* Editor */}
+              {!soloLectura && (
               <form
                 onSubmit={(e: FormEvent) => {
                   e.preventDefault()
@@ -505,6 +510,7 @@ export default function DisponibilidadPage() {
                   </p>
                 )}
               </form>
+              )}
             </div>
           )}
         </>

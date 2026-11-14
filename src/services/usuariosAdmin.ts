@@ -1,5 +1,5 @@
 // Gestión de cuentas por el superadmin vía GraphQL (/graphql, dueño: usuarios).
-import type { Pagina, UsuarioAdmin } from '@/types/admin'
+import type { CuentaCreadaAdmin, DatosNuevoUsuarioAdmin, Pagina, UsuarioAdmin } from '@/types/admin'
 import type { EstadoUsuario, RolUsuario } from '@/types/cuenta'
 import { graphqlFetch } from './api'
 
@@ -17,6 +17,8 @@ const FRAGMENTO_USUARIO_ADMIN = `
   apellido
   rol
   estado
+  alojamientoId
+  requiereCambioClave
   createdAt
 `
 
@@ -96,17 +98,42 @@ export async function reactivarUsuario(id: string): Promise<UsuarioAdmin> {
   return respuesta.reactivarUsuario
 }
 
-/** GraphQL: mutation cambiarRolUsuario(id, rol) */
-export async function cambiarRolUsuario(id: string, rol: RolUsuario): Promise<UsuarioAdmin> {
+/** GraphQL: mutation crearUsuarioAdmin(datos) */
+export async function crearUsuarioAdmin(datos: DatosNuevoUsuarioAdmin): Promise<CuentaCreadaAdmin> {
+  const respuesta = await graphqlFetch<{ crearUsuarioAdmin: CuentaCreadaAdmin }>(
+    `
+    mutation CrearUsuarioAdmin($datos: CrearUsuarioAdminInput!) {
+      crearUsuarioAdmin(datos: $datos) {
+        ${FRAGMENTO_USUARIO_ADMIN}
+        claveTemporal
+      }
+    }
+  `,
+    {
+      datos: {
+        email: datos.email,
+        nombre: datos.nombre,
+        apellido: datos.apellido,
+        ...(datos.password ? { password: datos.password } : {}),
+        rol: datos.rol,
+        ...(datos.alojamientoId != null ? { alojamientoId: datos.alojamientoId } : {}),
+      },
+    },
+  )
+  return respuesta.crearUsuarioAdmin
+}
+
+/** GraphQL: mutation cambiarRolUsuario(id, rol, alojamientoId) */
+export async function cambiarRolUsuario(id: string, rol: RolUsuario, alojamientoId?: number | null): Promise<UsuarioAdmin> {
   const respuesta = await graphqlFetch<{ cambiarRolUsuario: UsuarioAdmin }>(
     `
-    mutation CambiarRolUsuario($id: ID!, $rol: String!) {
-      cambiarRolUsuario(id: $id, rol: $rol) {
+    mutation CambiarRolUsuario($id: ID!, $rol: String!, $alojamientoId: Int) {
+      cambiarRolUsuario(id: $id, rol: $rol, alojamientoId: $alojamientoId) {
         ${FRAGMENTO_USUARIO_ADMIN}
       }
     }
   `,
-    { id, rol },
+    { id, rol, ...(alojamientoId != null && { alojamientoId }) },
   )
   return respuesta.cambiarRolUsuario
 }

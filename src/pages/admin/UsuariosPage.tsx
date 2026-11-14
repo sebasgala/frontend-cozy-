@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { ChipsPestanas } from '@/components/ChipsPestanas'
+import { CampoTexto } from '@/components/CampoTexto'
 import { DialogoConfirmacion } from '@/components/DialogoConfirmacion'
 import { Button } from '@/components/ui/button'
+import { useAlojamientosAdmin } from '@/hooks/useAlojamientosAdmin'
 import { useSesion } from '@/hooks/useSesion'
 import { contar, esErrorDeSesion, mensajeDeError } from '@/services/admin'
 import { cerrarSesion } from '@/services/cuenta'
 import {
   aprobarUsuario,
   cambiarRolUsuario,
+  crearUsuarioAdmin,
   listarUsuarios,
   reactivarUsuario,
   suspenderUsuario,
 } from '@/services/usuariosAdmin'
-import type { Pagina, UsuarioAdmin } from '@/types/admin'
+import type { AlojamientoAdmin, Pagina, UsuarioAdmin } from '@/types/admin'
 import type { EstadoUsuario, RolUsuario } from '@/types/cuenta'
 import { cn } from '@/lib/utils'
 import { EncabezadoAdmin } from './EncabezadoAdmin'
@@ -43,6 +46,7 @@ const fechaCorta = (iso: string) => new Date(iso).toLocaleDateString('es-EC', { 
  */
 export default function UsuariosPage() {
   const sesion = useSesion()
+  const { alojamientos } = useAlojamientosAdmin()
   const [estado, setEstado] = useState<FiltroEstado>('pendiente')
   const [rol, setRol] = useState<RolUsuario | ''>('')
   const [pagina, setPagina] = useState(1)
@@ -52,9 +56,20 @@ export default function UsuariosPage() {
 
   const [accion, setAccion] = useState<Accion | null>(null)
   const [rolNuevo, setRolNuevo] = useState<RolUsuario>('cliente')
+  const [alojamientoRolId, setAlojamientoRolId] = useState<string>('')
   const [errorAccion, setErrorAccion] = useState('')
   const [confirmando, setConfirmando] = useState(false)
   const [aviso, setAviso] = useState('')
+
+  const [creandoAbierto, setCreandoAbierto] = useState(false)
+  const [nuevoNombre, setNuevoNombre] = useState('')
+  const [nuevoApellido, setNuevoApellido] = useState('')
+  const [nuevoEmail, setNuevoEmail] = useState('')
+  const [nuevoPassword, setNuevoPassword] = useState('')
+  const [nuevoRol, setNuevoRol] = useState<RolUsuario>('administrador')
+  const [nuevoAlojamientoId, setNuevoAlojamientoId] = useState<string>('')
+  const [errorCrear, setErrorCrear] = useState('')
+  const [creando, setCreando] = useState(false)
 
   // "cargando" se deduce: el resultado guardado es de otra consulta distinta a la pedida
   const clave = `${estado}|${rol}|${pagina}|${version}`
@@ -95,6 +110,7 @@ export default function UsuariosPage() {
   const abrir = (tipo: TipoAccion, usuario: UsuarioAdmin) => {
     setAccion({ tipo, usuario })
     setRolNuevo(usuario.rol)
+    setAlojamientoRolId(usuario.alojamientoId ? String(usuario.alojamientoId) : '')
     setErrorAccion('')
     setAviso('')
   }
@@ -103,12 +119,74 @@ export default function UsuariosPage() {
     if (!abierto && !confirmando) setAccion(null)
   }
 
+  const requiereAlojamiento = (r: RolUsuario) => r === 'administrador' || r === 'recepcion'
+
+  const abrirCrear = () => {
+    setCreandoAbierto(true)
+    setNuevoNombre('')
+    setNuevoApellido('')
+    setNuevoEmail('')
+    setNuevoPassword('')
+    setNuevoRol('administrador')
+    setNuevoAlojamientoId(alojamientos?.[0]?.id ? String(alojamientos[0].id) : '')
+    setErrorCrear('')
+    setAviso('')
+  }
+
+  const confirmarCrear = async () => {
+    if (!nuevoNombre.trim() || !nuevoApellido.trim() || !nuevoEmail.trim()) {
+      setErrorCrear('Nombre, apellido y correo son obligatorios.')
+      return
+    }
+    const alojamientoNum = requiereAlojamiento(nuevoRol) ? Number(nuevoAlojamientoId) : null
+    if (requiereAlojamiento(nuevoRol) && (!alojamientoNum || !Number.isInteger(alojamientoNum))) {
+      setErrorCrear('Debes seleccionar un alojamiento para este rol.')
+      return
+    }
+    setCreando(true)
+    setErrorCrear('')
+    try {
+      const creada = await crearUsuarioAdmin({
+        nombre: nuevoNombre.trim(),
+        apellido: nuevoApellido.trim(),
+        email: nuevoEmail.trim(),
+        ...(nuevoPassword.trim() ? { password: nuevoPassword.trim() } : {}),
+        rol: nuevoRol,
+        alojamientoId: alojamientoNum,
+      })
+      setCreandoAbierto(false)
+      setEstado('activo')
+      setPagina(1)
+      setVersion((v) => v + 1)
+      setAviso(
+        creada.claveTemporal
+          ? `Usuario ${creada.nombre} ${creada.apellido} creado (${ROLES[creada.rol]}). Clave temporal: ${creada.claveTemporal}`
+          : `Usuario ${creada.nombre} ${creada.apellido} creado (${ROLES[creada.rol]}).`,
+      )
+    } catch (e) {
+      if (esErrorDeSesion(e)) {
+        await cerrarSesion()
+        return
+      }
+      setErrorCrear(mensajeDeError(e, 'No se pudo crear el usuario.'))
+    } finally {
+      setCreando(false)
+    }
+  }
+
   const confirmar = async () => {
     if (!accion) return
     const { tipo, usuario } = accion
-    if (tipo === 'rol' && rolNuevo === usuario.rol) {
-      setErrorAccion(`${nombreCompleto(usuario)} ya tiene el rol ${ROLES[rolNuevo].toLowerCase()}.`)
-      return
+    const alojamientoNum = requiereAlojamiento(rolNuevo) ? Number(alojamientoRolId) || null : null
+    if (tipo === 'rol') {
+      if (requiereAlojamiento(rolNuevo) && !alojamientoNum) {
+        setErrorAccion('Debes seleccionar un alojamiento para este rol.')
+        return
+      }
+      if (rolNuevo === usuario.rol && (usuario.alojamientoId ?? null) === alojamientoNum) {
+        setErrorAccion(`${nombreCompleto(usuario)} ya tiene ese rol y alojamiento.`)
+        return
+      }
     }
     setConfirmando(true)
     setErrorAccion('')
@@ -116,7 +194,7 @@ export default function UsuariosPage() {
       if (tipo === 'aprobar') await aprobarUsuario(usuario.id)
       else if (tipo === 'suspender') await suspenderUsuario(usuario.id)
       else if (tipo === 'reactivar') await reactivarUsuario(usuario.id)
-      else await cambiarRolUsuario(usuario.id, rolNuevo)
+      else await cambiarRolUsuario(usuario.id, rolNuevo, alojamientoNum)
       setAviso(RESULTADO[tipo](usuario, rolNuevo))
       setAccion(null)
       setVersion((v) => v + 1)
@@ -140,7 +218,15 @@ export default function UsuariosPage() {
 
   return (
     <>
-      <EncabezadoAdmin titulo="Usuarios" descripcion="Aprueba administradores, suspende cuentas y cambia roles." />
+      <EncabezadoAdmin
+        titulo="Usuarios"
+        descripcion="Crea usuarios, asigna alojamientos, aprueba administradores, suspende cuentas y cambia roles."
+        acciones={
+          <Button onClick={abrirCrear} size="sm">
+            Crear usuario
+          </Button>
+        }
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ChipsPestanas<FiltroEstado>
@@ -202,7 +288,7 @@ export default function UsuariosPage() {
         ) : (
           <ul className={cn('flex flex-col gap-3 transition-opacity', cargando && 'opacity-60')}>
             {datos?.data.map((u) => (
-              <FilaUsuario key={u.id} usuario={u} esPropia={u.id === sesion?.id} onAccion={abrir} />
+              <FilaUsuario key={u.id} usuario={u} esPropia={u.id === sesion?.id} alojamientos={alojamientos} onAccion={abrir} />
             ))}
           </ul>
         )}
@@ -242,11 +328,78 @@ export default function UsuariosPage() {
           </p>
           <p className="mt-2 text-muted-foreground">{DETALLE[accion.tipo]}</p>
           {accion.tipo === 'rol' && (
-            <label className="mt-4 flex flex-col gap-1.5 text-[13px] font-medium text-ink">
-              Nuevo rol
+            <div className="mt-4 flex flex-col gap-3">
+              <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+                Nuevo rol
+                <select
+                  value={rolNuevo}
+                  onChange={(e) => setRolNuevo(e.target.value as RolUsuario)}
+                  className="h-11 rounded-xl border border-border bg-white px-3 text-sm text-ink outline-none focus:border-primary"
+                >
+                  {Object.entries(ROLES).map(([valor, etiqueta]) => (
+                    <option key={valor} value={valor}>
+                      {etiqueta}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {requiereAlojamiento(rolNuevo) && (
+                <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+                  Alojamiento asignado *
+                  <select
+                    value={alojamientoRolId}
+                    onChange={(e) => setAlojamientoRolId(e.target.value)}
+                    className="h-11 rounded-xl border border-border bg-white px-3 text-sm text-ink outline-none focus:border-primary"
+                  >
+                    <option value="">Elige un alojamiento</option>
+                    {alojamientos?.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          )}
+          {errorAccion && (
+            <p role="alert" className="mt-4 text-sm font-medium text-error">
+              {errorAccion}
+            </p>
+          )}
+        </DialogoConfirmacion>
+      )}
+
+      {creandoAbierto && (
+        <DialogoConfirmacion
+          abierto
+          onAbiertoCambia={(abierto) => {
+            if (!abierto && !creando) setCreandoAbierto(false)
+          }}
+          titulo="Crear usuario"
+          etiquetaConfirmar="Crear usuario"
+          confirmando={creando}
+          onConfirmar={confirmarCrear}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <CampoTexto etiqueta="Nombre" required value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)} maxLength={120} />
+              <CampoTexto etiqueta="Apellido" required value={nuevoApellido} onChange={(e) => setNuevoApellido(e.target.value)} maxLength={120} />
+            </div>
+            <CampoTexto etiqueta="Correo" type="email" required value={nuevoEmail} onChange={(e) => setNuevoEmail(e.target.value)} maxLength={255} />
+            <CampoTexto
+              etiqueta="Contraseña (opcional)"
+              type="password"
+              value={nuevoPassword}
+              onChange={(e) => setNuevoPassword(e.target.value)}
+              maxLength={72}
+              ayuda="Si la dejas vacía se genera una clave temporal de un solo uso."
+            />
+            <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+              Rol *
               <select
-                value={rolNuevo}
-                onChange={(e) => setRolNuevo(e.target.value as RolUsuario)}
+                value={nuevoRol}
+                onChange={(e) => setNuevoRol(e.target.value as RolUsuario)}
                 className="h-11 rounded-xl border border-border bg-white px-3 text-sm text-ink outline-none focus:border-primary"
               >
                 {Object.entries(ROLES).map(([valor, etiqueta]) => (
@@ -256,12 +409,29 @@ export default function UsuariosPage() {
                 ))}
               </select>
             </label>
-          )}
-          {errorAccion && (
-            <p role="alert" className="mt-4 text-sm font-medium text-error">
-              {errorAccion}
-            </p>
-          )}
+            {requiereAlojamiento(nuevoRol) && (
+              <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+                Alojamiento asignado *
+                <select
+                  value={nuevoAlojamientoId}
+                  onChange={(e) => setNuevoAlojamientoId(e.target.value)}
+                  className="h-11 rounded-xl border border-border bg-white px-3 text-sm text-ink outline-none focus:border-primary"
+                >
+                  <option value="">Elige un alojamiento</option>
+                  {alojamientos?.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.nombre}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {errorCrear && (
+              <p role="alert" className="text-sm font-medium text-error">
+                {errorCrear}
+              </p>
+            )}
+          </div>
         </DialogoConfirmacion>
       )}
     </>
@@ -293,13 +463,19 @@ const RESULTADO: Record<TipoAccion, (u: UsuarioAdmin, rolNuevo: RolUsuario) => s
 function FilaUsuario({
   usuario,
   esPropia,
+  alojamientos,
   onAccion,
 }: {
   usuario: UsuarioAdmin
   esPropia: boolean
+  alojamientos?: AlojamientoAdmin[] | null
   onAccion: (tipo: TipoAccion, usuario: UsuarioAdmin) => void
 }) {
   const est = ESTADOS[usuario.estado]
+  const nombreAlojamiento =
+    usuario.alojamientoId != null
+      ? alojamientos?.find((a) => a.id === usuario.alojamientoId)?.nombre ?? `Alojamiento #${usuario.alojamientoId}`
+      : null
   return (
     <li className="flex flex-col gap-4 rounded-[20px] border border-border bg-white p-5 md:flex-row md:items-center md:justify-between">
       <div className="min-w-0">
@@ -311,6 +487,7 @@ function FilaUsuario({
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full bg-surface-muted px-2.5 py-1 font-medium text-ink">{ROLES[usuario.rol]}</span>
           <span className={cn('rounded-full px-2.5 py-1 font-medium', est.clase)}>{est.etiqueta}</span>
+          {nombreAlojamiento && <span className="rounded-full bg-surface-muted px-2.5 py-1 font-medium text-ink">{nombreAlojamiento}</span>}
           <span className="text-muted-foreground">Registro: {fechaCorta(usuario.createdAt)}</span>
         </div>
       </div>

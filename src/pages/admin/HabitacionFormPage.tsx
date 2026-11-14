@@ -16,6 +16,7 @@ import { EncabezadoAdmin } from './EncabezadoAdmin'
 interface Valores {
   nombre: string
   tipo: string
+  camas: string
   capacidadAdultos: string
   capacidadNinos: string
   precioBase: string
@@ -23,11 +24,23 @@ interface Valores {
   cancellationType: string
 }
 
-const VACIO: Valores = { nombre: '', tipo: '', capacidadAdultos: '2', capacidadNinos: '0', precioBase: '', mealPlan: '', cancellationType: '' }
+const TIPOS_CAMAS = [
+  '1 cama doble',
+  '1 cama doble grande',
+  '1 cama queen',
+  '1 cama king',
+  '2 camas individuales',
+  '1 cama individual',
+  '2 camas dobles',
+  '1 cama king + 1 sofá cama',
+]
+
+const VACIO: Valores = { nombre: '', tipo: '', camas: '', capacidadAdultos: '2', capacidadNinos: '0', precioBase: '', mealPlan: '', cancellationType: '' }
 
 const desdeHabitacion = (h: HabitacionAdmin): Valores => ({
   nombre: h.nombre,
   tipo: h.tipo,
+  camas: h.camas ?? '',
   capacidadAdultos: String(h.capacidadAdultos),
   capacidadNinos: String(h.capacidadNinos),
   precioBase: String(h.precioBase),
@@ -55,6 +68,7 @@ function validar(v: Valores): ErroresCampo {
 const aDatos = (v: Valores): DatosHabitacion => ({
   nombre: v.nombre.trim(),
   tipo: v.tipo.trim(),
+  camas: v.camas.trim() || null,
   capacidadAdultos: entero(v.capacidadAdultos),
   capacidadNinos: entero(v.capacidadNinos),
   precioBase: Number(v.precioBase.replace(',', '.')),
@@ -221,6 +235,21 @@ function HabitacionForm({ id }: { id?: string }) {
           <datalist id="tipos-habitacion">
             {TIPOS_HABITACION.map((t) => (
               <option key={t} value={t} />
+            ))}
+          </datalist>
+          <CampoTexto
+            etiqueta="Camas"
+            value={valores.camas}
+            onChange={(e) => poner('camas', e.target.value)}
+            error={errores.camas}
+            maxLength={100}
+            list="tipos-camas"
+            placeholder="Ej. 1 cama doble grande, 2 camas individuales"
+            ayuda="Se muestra al huésped y se envía a Booking. Puedes elegir una sugerencia o escribir la combinación exacta."
+          />
+          <datalist id="tipos-camas">
+            {TIPOS_CAMAS.map((c) => (
+              <option key={c} value={c} />
             ))}
           </datalist>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

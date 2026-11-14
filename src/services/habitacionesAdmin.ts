@@ -16,6 +16,7 @@ const FRAGMENTO_HABITACION = `
   capacidadAdultos
   capacidadNinos
   precioBase
+  camas
   mealPlan
   cancellationType
   activo
